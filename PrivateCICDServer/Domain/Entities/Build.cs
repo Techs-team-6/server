@@ -2,16 +2,9 @@
 
 public class Build
 {
-    public Guid Id { get; }
-    public Project Project { get; }
-    public string Name { get; }
-    public string BuildUrl { get; }
-
-    public Build(Guid id, Project project, string name, string buildUrl)
-    {
-        Id = id;
-        Project = project;
-        Name = name;
-        BuildUrl = buildUrl;
-    }
+    public Guid Id { get; set; }
+    public Guid ProjectId { get; set; }
+    public Project Project { get; set; }
+    public string Name { get; set; }
+    public string BuildUrl { get; set; }
 }
