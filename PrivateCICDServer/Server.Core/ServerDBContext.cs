@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Server.Core;
 
+// ReSharper disable once InconsistentNaming
 public sealed class ServerDBContext : DbContext
 {
     public ServerDBContext(DbContextOptions options)
@@ -10,7 +11,15 @@ public sealed class ServerDBContext : DbContext
     {
         Database.EnsureCreated();
     }
-    
-    public DbSet<Project> Projects { get; }
-    public DbSet<Build> Builds { get; }
+
+    public DbSet<Project> Projects { get; set; } = null!;
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.Entity<Project>()
+            .OwnsMany(t => t.Builds)
+            .WithOwner(t => t.Project)
+            .HasForeignKey(t => t.ProjectId);
+    }
 }
