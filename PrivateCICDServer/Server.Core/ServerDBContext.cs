@@ -13,6 +13,7 @@ public sealed class ServerDBContext : DbContext
     }
 
     public DbSet<Project> Projects { get; set; } = null!;
+    public DbSet<Token> Tokens { get; set; } = null!;
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -21,5 +22,7 @@ public sealed class ServerDBContext : DbContext
             .OwnsMany(t => t.Builds)
             .WithOwner(t => t.Project)
             .HasForeignKey(t => t.ProjectId);
+
+        builder.Entity<Token>();
     }
 }
