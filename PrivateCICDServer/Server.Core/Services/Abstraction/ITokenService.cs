@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Server.Core.Services.Interfaces;
+namespace Server.Core.Services.Abstraction;
 
 public interface ITokenService
 {
