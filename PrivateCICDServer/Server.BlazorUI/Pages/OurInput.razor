@@ -1,0 +1,37 @@
+﻿<tr>
+    <td>
+        <label class="col-form-label">@Label</label>
+    </td>
+    <td>
+        <input type="text"
+               readonly="@_isReadonly"
+               class="@_classString"
+               value="@Value">
+    </td>
+</tr>
+
+@code {
+
+    private string _readonlyString = "";
+    private string _classString = "";
+    private bool _isReadonly = false;
+
+    [Parameter]
+    public string Label { get; set; } = "Default Label Name";
+
+    [Parameter]
+    public bool IsReadonly
+    {
+        get => _isReadonly;
+        set
+        {
+            _isReadonly = value;
+            _readonlyString = _isReadonly ? "readonly" : "";
+            _classString = _isReadonly ? "form-control-plaintext" : "form-control";
+        }
+    }
+
+    [Parameter]
+    public string Value { get; set; } = "";
+
+}

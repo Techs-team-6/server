@@ -10,4 +10,9 @@
     <ProjectReference Include="..\Server.API.Client\Server.API.Client.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Blazor.ContextMenu" Version="1.14.0" />
+    <PackageReference Include="BlazorDialog" Version="1.5.0" />
+  </ItemGroup>
+
 </Project>

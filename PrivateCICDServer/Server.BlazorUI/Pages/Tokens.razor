@@ -1,8 +1,15 @@
 ﻿@page "/tokens"
 @using Server.API.Client
+@using Server.API.Client.Contracts
+@using System.Globalization
 @inject TokenClient TokenClient
 
 <PageTitle>Tokens</PageTitle>
+
+<ContextMenu Id="tokenRowMenu">
+    <Item OnClick="@OnTokenRowMenu" Id="Edit">Edit</Item>
+    <Item OnClick="@OnTokenRowMenu" Id="Delete">Delete</Item>
+</ContextMenu>
 
 <table class="table">
     <thead>
@@ -14,22 +21,134 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var token in TokenClient.ListAsync().Result)
+    @{
+        UpdateTokens();
+    }
+    @foreach (var token in _tokens)
     {
-        <tr>
+        <ContextMenuTrigger MenuId="tokenRowMenu" WrapperTag="tr">
             <td>@token.Id</td>
             <td>@token.Description</td>
             <td>@token.CreationTime</td>
             <td>@token.TokenStr</td>
-        </tr>
+        </ContextMenuTrigger>
     }
     </tbody>
 </table>
 <button class="btn btn-primary" @onclick="Generate">New</button>
 
+<Dialog Size="@DialogSize.Large" Centered="true" IsShowing="_isDialogShown" Animation="@DialogAnimation.SlideDown">
+    <DialogHeader>
+        <h4>Edit token</h4>
+    </DialogHeader>
+    <DialogBody>
+        <OurForm>
+            <OurInput Label="Id" IsReadonly="true" Value="@_editedToken?.Id.ToString()"/>
+            <OurInput Label="Description" Value="@_editedToken?.Description"/>
+            <OurInput Label="Creation Time" IsReadonly="true" Value="@_editedToken?.CreationTime.ToString(CultureInfo.InvariantCulture)"/>
+            <OurInput Label="Token String" IsReadonly="true" Value="@_editedToken?.TokenStr"/>
+        </OurForm>
+    </DialogBody>
+    <DialogFooter>
+        <button type="button" class="btn btn-primary" @onclick="@OnDialogSave">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="@OnDialogCancel">Cancel</button>
+    </DialogFooter>
+</Dialog>
+
+<Dialog Size="@DialogSize.Large" Centered="true" IsShowing="_isDeleteDialogShown" Animation="@DialogAnimation.SlideDown">
+    <DialogHeader>
+        <h4>Delete token?</h4>
+    </DialogHeader>
+    <DialogBody>
+        <OurForm>
+            <OurInput Label="Id" IsReadonly="true" Value="@_editedToken?.Id.ToString()"/>
+            <OurInput Label="Description" IsReadonly="true" Value="@_editedToken?.Description"/>
+            <OurInput Label="Creation Time" IsReadonly="true" Value="@_editedToken?.CreationTime.ToString(CultureInfo.InvariantCulture)"/>
+            <OurInput Label="Token String" IsReadonly="true" Value="@_editedToken?.TokenStr"/>
+        </OurForm>
+    </DialogBody>
+    <DialogFooter>
+        <button type="button" class="btn btn-danger" @onclick="@OnDeleteDialogApprove">Delete</button>
+        <button type="button" class="btn btn-secondary" @onclick="@OnDeleteDialogCancel">Cancel</button>
+    </DialogFooter>
+</Dialog>
+
 @code {
+    private Token? _editedToken;
+    private bool _isDialogShown;
+    private bool _isDeleteDialogShown;
+
+    private ICollection<Token> _tokens;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        UpdateTokens();
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
     private void Generate()
     {
         var result = TokenClient.GenerateAsync("Hello").Result;
     }
+
+    private void OnTokenRowMenu(ItemClickEventArgs e)
+    {
+        var tokenContainer = e.ContextMenuTrigger.ChildContent.Target!;
+        var token = (Token)tokenContainer.GetType().GetFields()[0].GetValue(tokenContainer)!;
+
+        switch (e.MenuItem.Id)
+        {
+            case "Edit":
+                Edit(token);
+                break;
+            case "Delete":
+                Delete(token);
+                break;
+        }
+    }
+
+    private void Delete(Token token)
+    {
+        _editedToken = token;
+        _isDeleteDialogShown = true;
+    }
+
+    private void Edit(Token token)
+    {
+        _editedToken = token;
+        ShowEditDialog();
+    }
+
+    private void ShowEditDialog()
+    {
+        _isDialogShown = true;
+    }
+
+    private void OnDialogSave()
+    {
+        _isDialogShown = false;
+    }
+
+    private void OnDialogCancel()
+    {
+        _isDialogShown = false;
+    }
+
+    private void OnDeleteDialogApprove()
+    {
+        _isDeleteDialogShown = false;
+        TokenClient.RefuseAsync(_editedToken!.Id).Wait();
+        UpdateTokens();
+    }
+
+    private void OnDeleteDialogCancel()
+    {
+        _isDeleteDialogShown = false;
+    }
+
+    private void UpdateTokens()
+    {
+        _tokens = TokenClient.ListAsync().Result;
+    }
+
 }
