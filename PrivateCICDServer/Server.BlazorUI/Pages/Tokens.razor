@@ -1,0 +1,35 @@
+﻿@page "/tokens"
+@using Server.API.Client
+@inject TokenClient TokenClient
+
+<PageTitle>Tokens</PageTitle>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Description</th>
+        <th>Creation Time</th>
+        <th>Token String</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var token in TokenClient.ListAsync().Result)
+    {
+        <tr>
+            <td>@token.Id</td>
+            <td>@token.Description</td>
+            <td>@token.CreationTime</td>
+            <td>@token.TokenStr</td>
+        </tr>
+    }
+    </tbody>
+</table>
+<button class="btn btn-primary" @onclick="Generate">New</button>
+
+@code {
+    private void Generate()
+    {
+        var result = TokenClient.GenerateAsync("Hello").Result;
+    }
+}

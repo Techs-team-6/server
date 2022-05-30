@@ -1,8 +1,8 @@
 ﻿using Domain.Entities;
-using Server.Core.Services.Interfaces;
+using Server.Core.Services.Abstraction;
 using Server.Core.Tools;
 
-namespace Server.Core.Services.Implementations;
+namespace Server.Core.Services.Implementation;
 
 public class TokenService : ITokenService
 {

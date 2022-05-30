@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Core", "Server.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.API.Client", "Server.API.Client\Server.API.Client.csproj", "{C49C550E-E245-41E5-8F9E-56B3A239F7BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.BlazorUI", "Server.BlazorUI\Server.BlazorUI.csproj", "{74364A47-8C5B-4EBF-B7B6-F4CD360AD10A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{C49C550E-E245-41E5-8F9E-56B3A239F7BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C49C550E-E245-41E5-8F9E-56B3A239F7BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C49C550E-E245-41E5-8F9E-56B3A239F7BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74364A47-8C5B-4EBF-B7B6-F4CD360AD10A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74364A47-8C5B-4EBF-B7B6-F4CD360AD10A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74364A47-8C5B-4EBF-B7B6-F4CD360AD10A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74364A47-8C5B-4EBF-B7B6-F4CD360AD10A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
