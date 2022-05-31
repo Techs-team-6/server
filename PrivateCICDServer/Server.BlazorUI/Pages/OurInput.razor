@@ -6,13 +6,12 @@
         <input type="text"
                readonly="@_isReadonly"
                class="@_classString"
-               value="@Value">
+               @bind-value="Value">
     </td>
 </tr>
 
 @code {
-
-    private string _readonlyString = "";
+    private string _value;
     private string _classString = "";
     private bool _isReadonly = false;
 
@@ -26,12 +25,23 @@
         set
         {
             _isReadonly = value;
-            _readonlyString = _isReadonly ? "readonly" : "";
             _classString = _isReadonly ? "form-control-plaintext" : "form-control";
         }
     }
 
     [Parameter]
-    public string Value { get; set; } = "";
+    public string Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
 
 }

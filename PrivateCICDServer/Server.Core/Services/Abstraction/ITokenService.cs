@@ -12,6 +12,13 @@ public interface ITokenService
     string Generate(string description);
     
     /// <summary>
+    /// Редактирование полей токена
+    /// </summary>
+    /// <param name="id">ID токена, который нужно изменить</param>
+    /// <param name="description">Новое описание токена</param>
+    void Edit(Guid id, string description);
+    
+    /// <summary>
     /// Отзывает токен
     /// </summary>
     /// <param name="id">ID токена, который нужно отозвать</param>
