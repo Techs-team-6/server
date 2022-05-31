@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Components
+@using Server.API.Client.Contracts
+@using System.Globalization
+<Dialog Size="@DialogSize.Large" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
+    <DialogHeader>
+        <h4>Edit token</h4>
+    </DialogHeader>
+    <DialogBody>
+        <OurForm>
+            <OurInput Label="Id" IsReadonly="true" Value="@_token.Id.ToString()"/>
+            <OurInput Label="Description" @bind-Value="_token.Description"/>
+            <OurInput Label="Creation Time" IsReadonly="true" Value="@_token.CreationTime.ToString(CultureInfo.InvariantCulture)"/>
+            <OurInput Label="Token String" IsReadonly="true" Value="@_token.TokenStr"/>
+        </OurForm>
+    </DialogBody>
+    <DialogFooter>
+        <button type="button" class="btn btn-primary" @onclick="@Approve">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="@Cancel">Cancel</button>
+    </DialogFooter>
+</Dialog>
+
+@code
+{
+    private Token _token;
+    private bool _isShown;
+    
+    [Parameter]
+    public Action<Token> OnEdit { get; set; }
+
+    public void Show(Token token)
+    {
+        _token = token;
+        _isShown = true;
+    }
+
+    private void Approve()
+    {
+        _isShown = false;
+        OnEdit.Invoke(_token);
+    }
+    
+    private void Cancel()
+    {
+        _isShown = false;
+    }
+}

@@ -1,18 +1,11 @@
 ﻿@page "/counter"
 
-<PageTitle>Counter</PageTitle>
+<label>Name = @Name</label>
+<input @bind-value=Name/>
 
-<h1>Counter</h1>
-
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-@code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+@code
+{
+    private string Name;
+    private DateTime? DateOfBirth;
+    private decimal? BankBalance;
 }

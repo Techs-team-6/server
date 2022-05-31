@@ -15,19 +15,25 @@ public class TokenController : ControllerBase
         _tokenService = tokenService;
     }
 
-    [HttpGet(Name = "TokenList")]
+    [HttpGet]
     public List<Token> List()
     {
         return _tokenService.List();
     }
 
-    [HttpPost(Name = "TokenGenerate")]
+    [HttpPost]
     public string Generate(string description)
     {
         return _tokenService.Generate(description);
     }
+    
+    [HttpPost]
+    public void Edit(Guid id, string description)
+    {
+        _tokenService.Edit(id, description);
+    }
 
-    [HttpPost(Name = "TokenRefuse")]
+    [HttpPost]
     public void Refuse(Guid id)
     {
         _tokenService.Refuse(id);

@@ -1,0 +1,45 @@
+﻿@using System.Globalization
+@using Server.API.Client.Contracts
+<Dialog Size="@DialogSize.Large" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
+    <DialogHeader>
+        <h4>Delete token?</h4>
+    </DialogHeader>
+    <DialogBody>
+        <OurForm>
+            <OurInput Label="Id" IsReadonly="true" Value="@_token?.Id.ToString()"/>
+            <OurInput Label="Description" IsReadonly="true" Value="@_token?.Description"/>
+            <OurInput Label="Creation Time" IsReadonly="true" Value="@_token?.CreationTime.ToString(CultureInfo.InvariantCulture)"/>
+            <OurInput Label="Token String" IsReadonly="true" Value="@_token?.TokenStr"/>
+        </OurForm>
+    </DialogBody>
+    <DialogFooter>
+        <button type="button" class="btn btn-danger" @onclick="@Approve">Delete</button>
+        <button type="button" class="btn btn-secondary" @onclick="@Cancel">Cancel</button>
+    </DialogFooter>
+</Dialog>
+
+@code
+{
+    private Token _token;
+    private bool _isShown;
+    
+    [Parameter]
+    public Action<Token> OnDelete { get; set; }
+
+    public void Show(Token token)
+    {
+        _token = token;
+        _isShown = true;
+    }
+
+    private void Approve()
+    {
+        _isShown = false;
+        OnDelete.Invoke(_token);
+    }
+    
+    private void Cancel()
+    {
+        _isShown = false;
+    }
+}

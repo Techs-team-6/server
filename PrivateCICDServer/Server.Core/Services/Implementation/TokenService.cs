@@ -26,6 +26,14 @@ public class TokenService : ITokenService
         return token.TokenStr;
     }
 
+    public void Edit(Guid id, string description)
+    {
+        var token = _context.Tokens.FirstOrDefault(t => t.Id == id)
+                    ?? throw new ServiceException($"There is not token with such id: {id}");
+        token.Description = description;
+        _context.SaveChanges();
+    }
+
     public void Refuse(Guid id)
     {
         var token = _context.Tokens.FirstOrDefault(t => t.Id == id);

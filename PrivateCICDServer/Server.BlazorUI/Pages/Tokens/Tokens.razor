@@ -1,0 +1,84 @@
+﻿@page "/tokens"
+@using Server.API.Client
+@using Server.API.Client.Contracts
+@using System.Globalization
+@using Server.BlazorUI.Pages.Tools
+@inject TokenClient TokenClient
+
+<PageTitle>Tokens</PageTitle>
+
+<ContextMenu Id="tokenRowMenu">
+    <Item OnClick="@OnTokenRowMenu" Id="Edit">Edit</Item>
+    <Item OnClick="@OnTokenRowMenu" Id="Delete">Delete</Item>
+</ContextMenu>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Description</th>
+        <th>Creation Time</th>
+        <th>Token String</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var token in TokenClient.ListAsync().Result)
+    {
+        <ContextMenuTrigger MenuId="tokenRowMenu" WrapperTag="tr">
+            <td>@token.Id</td>
+            <td>@token.Description</td>
+            <td>@token.CreationTime</td>
+            <td>@token.TokenStr</td>
+        </ContextMenuTrigger>
+    }
+    </tbody>
+</table>
+<button class="btn btn-primary" @onclick="@(_ => _createDialog.Show())">New</button>
+
+<DeleteDialog @ref="_deleteDialog" OnDelete="DeleteToken"/>
+<EditDialog @ref="_editDialog" OnEdit="EditToken"/>
+<CreateDialog @ref="_createDialog" OnCreate="CreateToken"/>
+
+@code {
+    private DeleteDialog _deleteDialog;
+    private EditDialog _editDialog;
+    private CreateDialog _createDialog;
+    
+    private bool _isDialogShown;
+    private bool _isDeleteDialogShown;
+
+    private void OnTokenRowMenu(ItemClickEventArgs e)
+    {
+        // (args => {_editDialog.Show(args.GetTarget<Token>());})
+        var token = e.GetTarget<Token>();
+
+        switch (e.MenuItem.Id)
+        {
+            case "Edit":
+                _editDialog.Show(token);
+                break;
+            case "Delete":
+                _deleteDialog.Show(token);
+                break;
+        }
+    }
+
+    private void DeleteToken(Token token)
+    {
+        TokenClient.RefuseAsync(token.Id).Wait();
+        StateHasChanged();
+    }
+
+    private void EditToken(Token token)
+    {
+        TokenClient.EditAsync(token.Id, token.Description).Wait();
+        StateHasChanged();
+    }
+
+    private void CreateToken(string description)
+    {
+        TokenClient.GenerateAsync(description).Wait();
+        StateHasChanged();
+    }
+
+}
