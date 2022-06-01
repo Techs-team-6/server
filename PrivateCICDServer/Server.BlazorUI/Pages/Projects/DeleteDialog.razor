@@ -1,0 +1,37 @@
+﻿@using System.Globalization
+@using Server.API.Client.Contracts
+<Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
+    <DialogHeader>
+        <h4>Delete project?</h4>
+    </DialogHeader>
+    <DialogFooter>
+        <button type="button" class="btn btn-danger" @onclick="@Approve">Delete</button>
+        <button type="button" class="btn btn-secondary" @onclick="@Cancel">Cancel</button>
+    </DialogFooter>
+</Dialog>
+
+@code
+{
+    private Project _project;
+    private bool _isShown;
+    
+    [Parameter]
+    public Action<Project> OnDelete { get; set; }
+
+    public void Show(Project project)
+    {
+        _project = project;
+        _isShown = true;
+    }
+
+    private void Approve()
+    {
+        _isShown = false;
+        OnDelete.Invoke(_project);
+    }
+    
+    private void Cancel()
+    {
+        _isShown = false;
+    }
+}

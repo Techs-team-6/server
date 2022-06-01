@@ -1,0 +1,41 @@
+﻿@page "/Projects"
+@using Server.API.Client
+@inject ProjectClient ProjectClient
+@inject NavigationManager NavigationManager
+<h3>Projects</h3>
+
+@foreach (var project in ProjectClient.ListAsync().Result)
+{
+    <style>
+        .card {
+            width: 18rem;
+            margin: 1rem 0;
+        }
+        a {
+            color: inherit;
+            text-decoration: inherit;
+        }
+    </style>
+    <a href="/Projects/@project.Name">
+        <div class="card">
+            <div class="card-header">
+                @project.Name
+            </div>
+        </div>
+    </a>
+}
+
+<button class="btn btn-primary" @onclick="@(_ => _createDialog.Show())">New</button>
+
+<CreateDialog @ref="_createDialog" OnCreate="@OnCreate"/>
+
+@code
+{
+    CreateDialog _createDialog;
+
+    private void OnCreate(string name)
+    {
+        var project = ProjectClient.CreateAsync(name, "build").Result;
+        NavigationManager.NavigateTo($"/Projects/{project.Name}/");
+    }
+}

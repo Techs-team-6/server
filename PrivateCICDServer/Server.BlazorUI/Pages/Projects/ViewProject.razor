@@ -1,0 +1,35 @@
+﻿@page "/Projects/{projectName}/"
+@using Server.API.Client
+@using Server.API.Client.Contracts
+@inject ProjectClient ProjectClient
+@inject NavigationManager NavigationManager
+
+@{
+    var project = ProjectClient.GetAsync(ProjectName).Result;
+    <OurForm>
+        <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
+        <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>
+        <OurInput IsReadonly="true" Label="Repository" Value="@project.Repository"/>
+        <OurInput IsReadonly="true" Label="BuildScript" Value="@project.BuildScript"/>
+    </OurForm>
+}
+<a href="/Projects/">
+    <button class="btn btn-primary">Back to list</button>
+</a>
+<button class="btn btn-danger" @onclick="@(_ => _deleteDialog.Show(project))">Delete</button>
+
+<DeleteDialog @ref="_deleteDialog" OnDelete="@OnDelete"/>
+
+@code {
+    DeleteDialog _deleteDialog;
+    
+    [Parameter]
+    public string ProjectName { get; set; }
+
+    private void OnDelete(Project project)
+    {
+        ProjectClient.DeleteAsync(project.Id).Wait();
+        NavigationManager.NavigateTo("/Projects/");
+    }
+
+}

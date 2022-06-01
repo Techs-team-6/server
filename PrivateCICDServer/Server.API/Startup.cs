@@ -20,6 +20,8 @@ public class Startup
             options => options.UseSqlite(Configuration.GetConnectionString("Sqlite")!));
         
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IBuildingService, DummyBuildingService>();
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

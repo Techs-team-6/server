@@ -7,6 +7,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBlazorDialog();
 
 builder.Services.AddScoped(services  => new TokenClient(services.GetService<IConfiguration>()!["serverApiUrl"], new HttpClient()));
+builder.Services.AddScoped(services  => new ProjectClient(services.GetService<IConfiguration>()!["serverApiUrl"], new HttpClient()));
 builder.Services.AddBlazorContextMenu();
 
 var app = builder.Build();
