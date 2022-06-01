@@ -17,4 +17,6 @@ public interface IProjectService
     public void DeleteProject(Guid id);
 
     public IReadOnlyList<Project> FindProjects(string substring);
+
+    public void AddBuild(Guid projectId, string buildName, Guid storageId);
 }

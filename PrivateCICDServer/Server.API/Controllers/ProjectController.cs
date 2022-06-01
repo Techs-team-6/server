@@ -45,4 +45,10 @@ public class ProjectController : ControllerBase
     {
         _service.DeleteProject(id);
     }
+
+    [HttpPost]
+    public void AddBuild(Guid projectId, string buildName, Guid storageId)
+    {
+        _service.AddBuild(projectId, buildName, storageId);
+    }
 }
