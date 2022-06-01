@@ -1,64 +1,68 @@
-﻿using Domain.Entities;
+﻿using System.Runtime.Serialization;
+using Domain.Entities;
 using Server.Core.Services.Abstraction;
+using Server.Core.Tools;
 
 namespace Server.Core.Services.Implementation;
 
 public class ProjectService : IProjectService
 {
-    private ServerDBContext _context;
+    private readonly ServerDBContext _context;
+    private readonly IBuildingService _buildingService;
 
-    public void RegisterProject(Project project)
+    public ProjectService(ServerDBContext context, IBuildingService buildingService)
     {
-        if (_context.Projects.Any(p => p.Id.Equals(project.Id)))
-            throw new Exception($"Project with id '{project.Id}' already exists.");
+        _context = context;
+        _buildingService = buildingService;
+    }
+
+    public Project CreateProject(string name, string buildScript)
+    {
+        if (_context.Projects.Any(p => p.Name.Equals(name)))
+            throw new SerializationException("There is another project with such name");
         
-        _context.Projects.Add(
-            new Project 
-            {
-                Id = project.Id,
-                Name = project.Name,
-                Repository = project.Repository,
-                BuildScript = project.BuildScript,
-                StartScript = project.StartScript,
-                Builds = project.Builds.ToList(),
-                
-            });
+        var project = new Project
+        {
+            Id = Guid.NewGuid(),
+            Name = name,
+            BuildScript = buildScript,
+        };
+        project.Repository = _buildingService.CreateProject(project.Id, name);
         
+        _context.Projects.Add(project);
         _context.SaveChanges();
+        return project;
     }
 
     public IReadOnlyList<Project> GetProjects()
     {
-        // todo build list deep copy?
         return _context.Projects.ToList();
     }
 
     public Project GetProject(Guid id)
     {
-        var project = _context.Projects.FirstOrDefault(p => p.Id.Equals(id))
-                      ?? throw new Exception($"Project with id '{id}' does not exist.");
-
-        // todo create a new object?
-        return project;
+        return _context.Projects.FirstOrDefault(p => p.Id.Equals(id))
+               ?? throw new ServiceException($"Project with id '{id}' does not exist.");
     }
 
-    public void UpdateProject(Project project)
+    public Project GetProject(string name)
     {
-        var projectToUpdate = _context.Projects.FirstOrDefault(p => p.Id.Equals(project.Id))
-            ?? throw new Exception($"Project with id '{project.Id}' does not exist.");
-        
-        projectToUpdate.Name = project.Name;
-        projectToUpdate.Repository = project.Repository;
-        projectToUpdate.BuildScript = project.BuildScript;
-        projectToUpdate.StartScript = project.StartScript;
-        projectToUpdate.Builds = project.Builds.ToList();
+        return _context.Projects.FirstOrDefault(p => p.Name.Equals(name))
+               ?? throw new ServiceException($"Project with name '{name}' does not exist.");
+    }
 
+    public void EditProject(Guid id, string name, string repository, string buildScript)
+    {
+        var project = GetProject(id);
+        project.Name = name;
+        project.Repository = repository;
+        project.BuildScript = buildScript;
         _context.SaveChanges();
     }
 
     public void DeleteProject(Guid id)
     {
-        var projectToDelete = _context.Projects.FirstOrDefault(p => p.Id.Equals(id)) 
+        var projectToDelete = _context.Projects.FirstOrDefault(p => p.Id.Equals(id))
                               ?? throw new Exception($"Project with id '{id}' does not exist.");
         _context.Projects.Remove(projectToDelete);
         _context.SaveChanges();

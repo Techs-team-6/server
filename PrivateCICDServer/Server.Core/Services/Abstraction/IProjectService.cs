@@ -4,13 +4,15 @@ namespace Server.Core.Services.Abstraction;
 
 public interface IProjectService
 {
-    public void RegisterProject(Project project);
+    public Project CreateProject(string name, string buildScript);
 
     public IReadOnlyList<Project> GetProjects();
 
     public Project GetProject(Guid id);
+    
+    public Project GetProject(string name);
 
-    public void UpdateProject(Project project);
+    public void EditProject(Guid id, string name, string repository, string buildScript);
 
     public void DeleteProject(Guid id);
 
