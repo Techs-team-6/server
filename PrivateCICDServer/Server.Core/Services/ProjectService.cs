@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using Domain.Entities;
 using Domain.Services;
+using ProjectServiceApiClient;
 using Server.Core.Tools;
 
 namespace Server.Core.Services;
@@ -9,18 +10,21 @@ public class ProjectService : IProjectService
 {
     private readonly ServerDBContext _context;
     private readonly IBuildingService _buildingService;
+    private readonly ProjectServiceClient _projectServiceClient;
 
-    public ProjectService(ServerDBContext context, IBuildingService buildingService)
+    public ProjectService(ServerDBContext context, IBuildingService buildingService,
+        ProjectServiceClient projectServiceClient)
     {
         _context = context;
         _buildingService = buildingService;
+        _projectServiceClient = projectServiceClient;
     }
 
     public Project CreateProject(string name, string buildScript)
     {
         if (_context.Projects.Any(p => p.Name.Equals(name)))
             throw new SerializationException("There is another project with such name");
-        
+
         var project = new Project
         {
             Id = Guid.NewGuid(),
@@ -28,7 +32,7 @@ public class ProjectService : IProjectService
             BuildScript = buildScript,
         };
         project.Repository = _buildingService.CreateProject(project.Id, name);
-        
+
         _context.Projects.Add(project);
         _context.SaveChanges();
         return project;
@@ -84,7 +88,7 @@ public class ProjectService : IProjectService
             ProjectId = project.Id,
             StorageId = storageId,
         };
-        
+
         project.Builds.Add(build);
         _context.SaveChanges();
     }

@@ -13,6 +13,29 @@
         <OurInput IsReadonly="true" Label="BuildScript" Value="@project.BuildScript"/>
     </OurForm>
 }
+<h4>Builds</h4>
+@foreach (var build in project.Builds)
+{
+    <style>
+        .card {
+            width: 18rem;
+            margin: 1rem 0;
+        }
+        a {
+            color: inherit;
+            text-decoration: inherit;
+        }
+    </style>
+    <div class="card">
+        <div class="card-header">
+            @build.Name
+        </div>
+        <OurForm>
+            <OurInput IsReadonly="true" Label="Id" Value="@build.Id.ToString()"/>
+            <OurInput IsReadonly="true" Label="Storage Id" Value="@build.StorageId.ToString()"/>
+        </OurForm>
+    </div>
+}
 <a href="/Projects/">
     <button class="btn btn-primary">Back to list</button>
 </a>
@@ -22,7 +45,7 @@
 
 @code {
     DeleteDialog _deleteDialog;
-    
+
     [Parameter]
     public string ProjectName { get; set; }
 

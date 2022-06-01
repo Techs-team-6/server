@@ -1,5 +1,6 @@
 ﻿using Domain.Services;
 using Microsoft.EntityFrameworkCore;
+using ProjectServiceApiClient;
 using Server.Core;
 using Server.Core.Services;
 
@@ -18,10 +19,12 @@ public class Startup
     {
         services.AddDbContext<ServerDBContext>(
             options => options.UseSqlite(Configuration.GetConnectionString("Sqlite")!));
-        
+
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IBuildingService, DummyBuildingService>();
+        services.AddScoped(serviceProvider => new ProjectServiceClient(
+            serviceProvider.GetService<IConfiguration>()!["ProjectBuildingServiceUrl"]!, new HttpClient()));
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
