@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Server.Core.Services.Abstraction;
+namespace Domain.Services;
 
 public interface ITokenService
 {
@@ -30,6 +30,13 @@ public interface ITokenService
     /// <param name="tokenStr">Токен-строка</param>
     /// <returns>Возвращает true, если токен существует</returns>
     bool Check(string tokenStr);
+    
+    /// <summary>
+    /// Находит токен по токен-строке
+    /// </summary>
+    /// <param name="tokenStr">Токен-строка</param>
+    /// <returns>Возвращает токен, если он был найден, иначе null</returns>
+    Token? FindByTokenString(string tokenStr);
     
     /// <summary>
     /// Показывает список токенов

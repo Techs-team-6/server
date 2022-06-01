@@ -1,4 +1,4 @@
-﻿namespace Server.Core.Services.Abstraction;
+﻿namespace Domain.Services;
 
 public interface IBuildingService
 {

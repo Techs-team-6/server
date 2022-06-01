@@ -1,6 +1,6 @@
-﻿using Server.Core.Services.Abstraction;
+﻿using Domain.Services;
 
-namespace Server.Core.Services.Implementation;
+namespace Server.Core.Services;
 
 public class DummyBuildingService : IBuildingService
 {

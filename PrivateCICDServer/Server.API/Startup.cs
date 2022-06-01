@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Services;
+using Microsoft.EntityFrameworkCore;
 using Server.Core;
-using Server.Core.Services.Abstraction;
-using Server.Core.Services.Implementation;
+using Server.Core.Services;
 
 namespace Server.API;
 

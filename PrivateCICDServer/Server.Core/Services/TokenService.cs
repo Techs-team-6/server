@@ -1,8 +1,8 @@
 ﻿using Domain.Entities;
-using Server.Core.Services.Abstraction;
+using Domain.Services;
 using Server.Core.Tools;
 
-namespace Server.Core.Services.Implementation;
+namespace Server.Core.Services;
 
 public class TokenService : ITokenService
 {
@@ -45,7 +45,12 @@ public class TokenService : ITokenService
 
     public bool Check(string tokenStr)
     {
-        return _context.Tokens.FirstOrDefault(t => t.TokenStr.Equals(tokenStr)) is not null;
+        return FindByTokenString(tokenStr) is not null;
+    }
+
+    public Token? FindByTokenString(string tokenStr)
+    {
+        return _context.Tokens.FirstOrDefault(t => t.TokenStr.Equals(tokenStr));
     }
 
     public List<Token> List()

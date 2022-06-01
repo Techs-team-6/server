@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
+using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
-using Server.Core.Services.Abstraction;
 
 namespace Server.API.Controllers;
 

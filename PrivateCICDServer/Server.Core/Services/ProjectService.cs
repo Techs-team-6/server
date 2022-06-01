@@ -1,9 +1,9 @@
 ﻿using System.Runtime.Serialization;
 using Domain.Entities;
-using Server.Core.Services.Abstraction;
+using Domain.Services;
 using Server.Core.Tools;
 
-namespace Server.Core.Services.Implementation;
+namespace Server.Core.Services;
 
 public class ProjectService : IProjectService
 {

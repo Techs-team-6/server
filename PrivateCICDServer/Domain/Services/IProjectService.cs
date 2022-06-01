@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Server.Core.Services.Abstraction;
+namespace Domain.Services;
 
 public interface IProjectService
 {
