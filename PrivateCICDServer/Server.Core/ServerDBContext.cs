@@ -21,9 +21,11 @@ public sealed class ServerDBContext : DbContext
         base.OnModelCreating(builder);
 
         builder.Entity<Project>()
-            .OwnsMany(t => t.Builds)
-            .WithOwner(t => t.Project)
-            .HasForeignKey(t => t.ProjectId);
+            .HasMany(t => t.Instances);
+        builder.Entity<Instance>()
+            .OwnsMany(t => t.StateChanges);
+        builder.Entity<Project>()
+            .HasMany(t => t.Builds);
 
         builder.Entity<Token>();
         builder.Entity<DedicatedMachine>();
