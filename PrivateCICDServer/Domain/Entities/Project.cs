@@ -2,6 +2,15 @@
 
 public class Project
 {
+    public Project(string name, string repository, string buildScript, InstanceConfig instanceConfig)
+    {
+        Id = Guid.NewGuid();
+        Name = name;
+        Repository = repository;
+        BuildScript = buildScript;
+        Instance = new Instance(instanceConfig);
+    }
+
     public Guid Id { get; set; }
     // TODO NameValidatorService, project name should be a correct url
     public string Name { get; set; }
@@ -10,4 +19,6 @@ public class Project
     public string BuildScript { get; set; }
 
     public List<Build> Builds { get; set; } = new();
+    
+    public Instance Instance { get; private init; }
 }
