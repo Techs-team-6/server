@@ -4,9 +4,9 @@ using Domain.States;
 namespace Domain.Services;
 public interface IInstanceService
 {
-    void ChangeInstanceState(Guid projectId, InstanceState newState);
-    InstanceConfig GetConfiguration(Guid projectId);
-    void UpdateConfig(Guid projectId, InstanceConfig newConfig);
-    IReadOnlyCollection<InstanceState> ListAllStates(Guid projectId);
-    IReadOnlyCollection<InstanceState> ListLastStates(Guid projectId, int numberOfStates);
+    void ChangeInstanceState(Guid projectId, Guid instanceId, InstanceState newState);
+    InstanceConfig GetConfiguration(Guid projectId, Guid instanceId);
+    void UpdateConfig(Guid projectId, Guid instanceId, InstanceConfig newConfig);
+    IReadOnlyCollection<InstanceState> ListAllStates(Guid projectId, Guid instanceId);
+    IReadOnlyCollection<InstanceState> ListLastStates(Guid projectId, Guid instanceId, int numberOfStates);
 }

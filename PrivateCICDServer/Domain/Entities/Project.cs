@@ -9,6 +9,6 @@ public class Project
     public string BuildScript { get; set; }
 
     public List<Build> Builds { get; set; } = new();
-    
-    public Instance Instance { get; private init; }
+
+    public List<Instance> Instances { get; set; } = new();
 }

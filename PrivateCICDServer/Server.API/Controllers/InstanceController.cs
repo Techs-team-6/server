@@ -17,32 +17,32 @@ public class InstanceController
     }
 
     [HttpPost]
-    public void ChangeInstanceState(Guid projectId, InstanceState newState)
+    public void ChangeInstanceState(Guid projectId, Guid instanceId, InstanceState newState)
     {
-        _service.ChangeInstanceState(projectId, newState);
+        _service.ChangeInstanceState(projectId, instanceId, newState);
     }
 
     [HttpPost]
-    public void UpdateConfiguration(Guid projectId, InstanceConfig instanceConfig)
+    public void UpdateConfiguration(Guid projectId, Guid instanceId, InstanceConfig instanceConfig)
     {
-        _service.UpdateConfig(projectId, instanceConfig);
+        _service.UpdateConfig(projectId, instanceId, instanceConfig);
     }
 
     [HttpGet]
-    public InstanceConfig GetConfiguration(Guid projectId)
+    public InstanceConfig GetConfiguration(Guid projectId, Guid instanceId)
     {
-        return _service.GetConfiguration(projectId);
+        return _service.GetConfiguration(projectId, instanceId);
     }
 
     [HttpGet]
-    public IReadOnlyCollection<InstanceState> ListAllStates(Guid projectId)
+    public IReadOnlyCollection<InstanceState> ListAllStates(Guid projectId, Guid instanceId)
     {
-        return _service.ListAllStates(projectId);
+        return _service.ListAllStates(projectId, instanceId);
     }
     
     [HttpGet]
-    public IReadOnlyCollection<InstanceState> ListLastStates(Guid projectId, int count)
+    public IReadOnlyCollection<InstanceState> ListLastStates(Guid projectId, Guid instanceId, int count)
     {
-        return _service.ListLastStates(projectId, count);
+        return _service.ListLastStates(projectId, instanceId, count);
     }
 }
