@@ -19,4 +19,22 @@ public class MasterController : ControllerBase
     {
         _service.Reset();
     }
+    
+    [HttpGet]
+    public string TestStringGet()
+    {
+        return "Get";
+    }
+    
+    [HttpGet]
+    public JsonResult TestStringUrl()
+    {
+        return new JsonResult("Getasdas://asdasdadadasd.git");
+    }
+    
+    [HttpPost]
+    public string TestStringPost()
+    {
+        return "Post";
+    }
 }

@@ -2,11 +2,14 @@
 using System.Net.Sockets;
 using DMConnect.Share;
 using Domain.Dto.DedicatedMachineDto;
+using Action = Domain.Dto.DedicatedMachineDto.Action;
 
 namespace DMConnect.Client;
 
 public class RemoteDedicatedMachineHub : IDedicatedMachineHub
 {
+    public Guid MachineId { get; }
+    
     private readonly IDedicatedMachineAgent _agent;
     private readonly TcpClient _tcpClient;
     private readonly Stream _stream;
@@ -25,12 +28,14 @@ public class RemoteDedicatedMachineHub : IDedicatedMachineHub
         this(endPoint, agent)
     {
         _stream.Write(dto);
+        MachineId = _stream.Read<Guid>();
     }
     
     public RemoteDedicatedMachineHub(IPEndPoint endPoint, IDedicatedMachineAgent agent, AuthDto dto) :
         this(endPoint, agent)
     {
         _stream.Write(dto);
+        MachineId = _stream.Read<Guid>();
     }
 
     public void Start()
@@ -47,6 +52,9 @@ public class RemoteDedicatedMachineHub : IDedicatedMachineHub
                 var action = _stream.ReadAction();
                 switch (action)
                 {
+                    case Action.StartInstance:
+                        _agent.StartInstance(_stream.Read<StartInstanceDto>());
+                        break;
                     default:
                         throw new Exception("Unknown action : " + action);
                 }
@@ -60,6 +68,15 @@ public class RemoteDedicatedMachineHub : IDedicatedMachineHub
         {
             _tcpClient.Close();
         }
-        
+    }
+
+    public void InstanceOutErr(InstanceStdOutDto dto)
+    {
+        _stream.Write(dto);
+    }
+
+    public void InstanceStdErr(InstanceStdErrDto dto)
+    {
+        _stream.Write(dto);
     }
 }

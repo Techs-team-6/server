@@ -27,14 +27,11 @@ public static class StreamExtension
 
     private static int ReadInt(this Stream stream)
     {
-        var i = (stream.ReadByte() << 24) | (stream.ReadByte() << 16) | (stream.ReadByte() << 8) | (stream.ReadByte());
-        Console.WriteLine($"Read int: {i}");
-        return i;
+        return (stream.ReadByte() << 24) | (stream.ReadByte() << 16) | (stream.ReadByte() << 8) | (stream.ReadByte());
     }
 
     private static void WriteInt(this Stream stream, int value)
     {
-        Console.WriteLine($"Write int: {value}");
         stream.WriteByte((byte)(value >> 24));
         stream.WriteByte((byte)(value >> 16));
         stream.WriteByte((byte)(value >> 8));
@@ -55,9 +52,7 @@ public static class StreamExtension
             bytesRead += read;
         }
 
-        var str = Encoding.UTF8.GetString(bytes, 0, size);
-        Console.WriteLine(str);
-        return str;
+        return Encoding.UTF8.GetString(bytes, 0, size);
     }
 
     private static void WriteString(this Stream stream, string value)

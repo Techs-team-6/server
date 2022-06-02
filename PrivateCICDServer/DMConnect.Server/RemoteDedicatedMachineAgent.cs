@@ -40,20 +40,10 @@ public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
                 var action = _stream.ReadAction();
                 switch (action)
                 {
-                    // case HubActio.ConsoleWrite:
-                    // {
-                    //     var dto = _stream.Read<StringDto>();
-                    //     Console.Write(dto.Value);
-                    //     // ConsoleWrite(dto.Value);
-                    //     break;
-                    // }
-                    // case HubAction.ConsoleWriteLine:
-                    // {
-                    //     var dto = _stream.Read<StringDto>();
-                    //     Console.WriteLine(dto.Value);
-                    //     // ConsoleWriteLine(dto.Value);
-                    //     break;
-                    // }
+                    case Action.InstanceStdOut:
+                        throw new NotImplementedException();
+                    case Action.InstanceStdErr:
+                        throw new NotImplementedException();
                     default:
                         throw new Exception("Wrong action : " + action);
                 }
@@ -75,26 +65,35 @@ public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
     private void AuthOperation()
     {
         var action = _stream.ReadAction();
-        if (action == Action.Register)
+        if (action is Action.Authenthicate or Action.Register)
         {
-            var dto = _stream.Read<RegisterDto>();
-            var dedicatedMachine = _machineService.RegisterMachine(dto);
+            if (action == Action.Register)
+            {
+                var dto = _stream.Read<RegisterDto>();
+                var dedicatedMachine = _machineService.RegisterMachine(dto);
             
-            _id = dedicatedMachine.Id;
-            _machineService.SetState(new SetStateDto(_id, DedicatedMachineState.Online));
-        }
-        else if (action == Action.Authenthicate)
-        {
-            var dto = _stream.Read<AuthDto>();
-            if (!_machineService.AuthMachine(dto))
-                throw new Exception("Wrong credentials");
+                _id = dedicatedMachine.Id;
+            }
+            else
+            {
+                var dto = _stream.Read<AuthDto>();
+                if (!_machineService.AuthMachine(dto))
+                    throw new Exception("Wrong credentials");
             
-            _id = dto.Id;
+                _id = dto.Id;
+            }
+            
+            _stream.Write(_id);
             _machineService.SetState(new SetStateDto(_id, DedicatedMachineState.Online));
         }
         else
         {
-            throw new Exception("Authenthication is required");
+            throw new Exception("Authentication is required");
         }
+    }
+
+    public void StartInstance(StartInstanceDto dto)
+    {
+        _stream.Write(dto);
     }
 }

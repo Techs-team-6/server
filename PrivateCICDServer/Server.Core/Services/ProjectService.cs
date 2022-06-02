@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Domain.Services;
 using ProjectServiceApiClient;
+using ProjectServiceApiClient.Models;
 using Server.Core.Tools;
 
 namespace Server.Core.Services;
@@ -35,8 +36,7 @@ public class ProjectService : IProjectService
             Name = name,
             BuildScript = buildScript,
         };
-        project.Repository = _buildingService.CreateProject(project.Id, name);
-
+        project.Repository = _projectServiceClient.CreateAsync(new ProjectCreateDto(project.Id, name, true)).Result.ToString();
         _context.Projects.Add(project);
         _context.SaveChanges();
         return project;
