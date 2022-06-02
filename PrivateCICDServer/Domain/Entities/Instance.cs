@@ -3,12 +3,8 @@ using Domain.States;
 namespace Domain.Entities;
 public class Instance
 {
-    private readonly List<InstanceStateChange> _changes;
-    public Instance(InstanceConfig instanceConfig)
-    {
-        InstanceConfig = instanceConfig;
-        _changes = new List<InstanceStateChange>();
-    }
+    private readonly List<InstanceStateChange> _changes = new();
+    public Guid Id { get; set; }
     public InstanceConfig InstanceConfig { get; set; }
     public InstanceState State { get; private set; }
 
