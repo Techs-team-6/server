@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.Dto.DedicatedMachineDto;
+using Domain.Entities;
 using Domain.Services;
 using Server.Core.Tools;
 
@@ -15,36 +16,41 @@ public class DedicatedMachineService : IDedicatedMachineService
         _tokenService = tokenService;
     }
 
-    public DedicatedMachine RegisterMachine(string tokenStr, string label, string description)
+    public DedicatedMachine RegisterMachine(RegisterDto dto)
     {
-        var token = _tokenService.FindByTokenString(tokenStr) ?? throw new ServiceException("Invalid token");
-        var dedicatedServer = new DedicatedMachine()
+        var token = _tokenService.FindByTokenString(dto.TokenString) ?? throw new ServiceException("Invalid token");
+        var dedicatedServer = new DedicatedMachine
         {
             TokenId = token.Id,
-            Label = label,
-            Description = description,
-            State = DedicatedMachine.DedicatedMachineState.Offline,
+            Label = dto.Label,
+            Description = dto.Description,
+            State = DedicatedMachineState.Offline,
         };
 
-        _context.DedicatedServers.Add(dedicatedServer);
+        _context.DedicatedMachines.Add(dedicatedServer);
         _context.SaveChanges();
         return dedicatedServer;
     }
 
-    public bool AuthMachine(Guid id, string tokenStr)
+    public bool AuthMachine(AuthDto dto)
     {
-        var machine = _context.DedicatedServers.FirstOrDefault(m => m.Id == id) ??
+        var machine = _context.DedicatedMachines.FirstOrDefault(m => m.Id == dto.Id) ??
                       throw new ServiceException("There is no machine with such id");
-        if (!_tokenService.Check(tokenStr))
+        if (!_tokenService.Check(dto.TokenString))
             throw new ServiceException("Wrong token");
         return true;
     }
 
-    public void SetState(Guid serverId, DedicatedMachine.DedicatedMachineState state)
+    public void SetState(SetStateDto dto)
     {
-        var server = _context.DedicatedServers.FirstOrDefault(s => s.Id == serverId)
-                     ?? throw new ServiceException($"There is no dedicated server with such id '{serverId}'");
-        server.State = state;
+        var server = _context.DedicatedMachines.FirstOrDefault(s => s.Id == dto.ServerId)
+                     ?? throw new ServiceException($"There is no dedicated server with such id '{dto.ServerId}'");
+        server.State = dto.State;
         _context.SaveChanges();
+    }
+
+    public List<DedicatedMachine> List()
+    {
+        return _context.DedicatedMachines.ToList();
     }
 }

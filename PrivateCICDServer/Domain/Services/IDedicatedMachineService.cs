@@ -1,12 +1,15 @@
-﻿using Domain.Entities;
+﻿using Domain.Dto.DedicatedMachineDto;
+using Domain.Entities;
 
 namespace Domain.Services;
 
 public interface IDedicatedMachineService
 {
-    DedicatedMachine RegisterMachine(string tokenStr, string label, string description);
+    DedicatedMachine RegisterMachine(RegisterDto dto);
     
-    bool AuthMachine(Guid id, string tokenStr);
+    bool AuthMachine(AuthDto dto);
 
-    void SetState(Guid serverId, DedicatedMachine.DedicatedMachineState state);
+    void SetState(SetStateDto dto);
+    
+    List<DedicatedMachine> List();
 }

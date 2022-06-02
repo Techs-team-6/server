@@ -10,15 +10,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.API.Client", "Server
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.BlazorUI", "Server.BlazorUI\Server.BlazorUI.csproj", "{74364A47-8C5B-4EBF-B7B6-F4CD360AD10A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DedicatedMachine.Share", "DedicatedMachine.Share\DedicatedMachine.Share.csproj", "{CE46D106-F8E5-443F-A9CD-41A0D2E01EBA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMConnect.Share", "DMConnect.Share\DMConnect.Share.csproj", "{CE46D106-F8E5-443F-A9CD-41A0D2E01EBA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DedicatedMachine.Client", "DedicatedMachine.Client\DedicatedMachine.Client.csproj", "{DC933F5D-EEAB-44F1-B049-A687FC8A3443}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMConnect.Client", "DMConnect.Client\DMConnect.Client.csproj", "{DC933F5D-EEAB-44F1-B049-A687FC8A3443}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DedicatedMachine.Server", "DedicatedMachine.Server\DedicatedMachine.Server.csproj", "{6B3176E0-D86A-4B7B-86B5-B1DCC465B6C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMConnect.Server", "DMConnect.Server\DMConnect.Server.csproj", "{6B3176E0-D86A-4B7B-86B5-B1DCC465B6C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DedicatedMachine.Client.Test", "DedicatedMachine.Client.Test\DedicatedMachine.Client.Test.csproj", "{0D9333B7-E291-4DAC-9C76-A01E0288C9CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMConnect.Client.Test", "DMConnect.Client.Test\DMConnect.Client.Test.csproj", "{0D9333B7-E291-4DAC-9C76-A01E0288C9CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DedicatedMachine.Server.Test", "DedicatedMachine.Server.Test\DedicatedMachine.Server.Test.csproj", "{AC7A62B6-5150-418C-A0D3-AF4BCA554450}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMConnect.Server.Test", "DMConnect.Server.Test\DMConnect.Server.Test.csproj", "{AC7A62B6-5150-418C-A0D3-AF4BCA554450}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Core.Test", "Server.Core.Test\Server.Core.Test.csproj", "{C1249A6C-FDB6-4A79-AB48-F9CEE2E291E6}"
 EndProject

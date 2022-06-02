@@ -27,6 +27,7 @@
     </Target>
 
     <ItemGroup>
+        <ProjectReference Include="..\DMConnect.Server\DMConnect.Server.csproj" />
         <ProjectReference Include="..\Server.Core\Server.Core.csproj" />
     </ItemGroup>
 

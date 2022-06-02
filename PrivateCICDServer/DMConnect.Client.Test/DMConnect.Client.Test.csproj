@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>DMConnect.Client.Test</AssemblyName>
+        <RootNamespace>DMConnect.Client.Test</RootNamespace>
+        <PackageId>DMConnect.Client.Test</PackageId>
+        <Authors>DMConnect.Client.Test</Authors>
+        <Company>DMConnect.Client.Test</Company>
+        <Product>DMConnect.Client.Test</Product>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DMConnect.Client\DMConnect.Client.csproj" />
+    </ItemGroup>
+
+</Project>

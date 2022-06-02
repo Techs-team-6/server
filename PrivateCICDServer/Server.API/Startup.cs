@@ -1,4 +1,5 @@
-﻿using Domain.Services;
+﻿using DMConnect.Server;
+using Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using ProjectServiceApiClient;
 using Server.Core;
@@ -23,8 +24,13 @@ public class Startup
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IBuildingService, DummyBuildingService>();
+        services.AddScoped<IMasterService, MasterService>();
         services.AddScoped(serviceProvider => new ProjectServiceClient(
             serviceProvider.GetService<IConfiguration>()!["ProjectBuildingServiceUrl"]!, new HttpClient()));
+
+        services.AddScoped<IDedicatedMachineService, DedicatedMachineService>();
+        // services.AddScoped(serviceProvider => new DedicatedMachineHub(
+        //     serviceProvider.GetRequiredService<IDedicatedMachineService>(), 50050));
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

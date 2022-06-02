@@ -1,0 +1,77 @@
+﻿@page "/DedicatedMachines"
+@using Server.API.Client
+@inject DmClient DmClient
+
+<PageTitle>Dedicated Machines</PageTitle>
+<h3>Dedicated Machines</h3>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Description</th>
+        <th>Creation Time</th>
+        <th>Token String</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var machine in DmClient.ListAsync().Result)
+    {
+        <tr>
+            <td>@machine.Id</td>
+            <td>@machine.Label</td>
+            <td>@machine.Description</td>
+            <td>@machine.State</td>
+        </tr>
+    }
+    </tbody>
+</table>
+@* <button class="btn btn-primary" @onclick="@(_ => _createDialog.Show())">New</button> *@
+@* *@
+@* <DeleteDialog @ref="_deleteDialog" OnDelete="DeleteToken"/> *@
+@* <EditDialog @ref="_editDialog" OnEdit="EditToken"/> *@
+@* <CreateDialog @ref="_createDialog" OnCreate="CreateToken"/> *@
+@* *@
+@* @code { *@
+@*     private DeleteDialog _deleteDialog; *@
+@*     private EditDialog _editDialog; *@
+@*     private CreateDialog _createDialog; *@
+@* *@
+@*     private bool _isDialogShown; *@
+@*     private bool _isDeleteDialogShown; *@
+@* *@
+@*     private void OnTokenRowMenu(ItemClickEventArgs e) *@
+@*     { *@
+@*         // (args => {_editDialog.Show(args.GetTarget<Token>());}) *@
+@*         var token = e.GetTarget<Token>(); *@
+@* *@
+@*         switch (e.MenuItem.Id) *@
+@*         { *@
+@*             case "Edit": *@
+@*                 _editDialog.Show(token); *@
+@*                 break; *@
+@*             case "Delete": *@
+@*                 _deleteDialog.Show(token); *@
+@*                 break; *@
+@*         } *@
+@*     } *@
+@* *@
+@*     private void DeleteToken(Token token) *@
+@*     { *@
+@*         TokenClient.RefuseAsync(token.Id).Wait(); *@
+@*         StateHasChanged(); *@
+@*     } *@
+@* *@
+@*     private void EditToken(Token token) *@
+@*     { *@
+@*         TokenClient.EditAsync(token.Id, token.Description).Wait(); *@
+@*         StateHasChanged(); *@
+@*     } *@
+@* *@
+@*     private void CreateToken(string description) *@
+@*     { *@
+@*         TokenClient.GenerateAsync(description).Wait(); *@
+@*         StateHasChanged(); *@
+@*     } *@
+@* *@
+@* } *@

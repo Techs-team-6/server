@@ -1,6 +1,6 @@
 {
   "runtime": "Net60",
-  "defaultVariables": "ClientNamespace=Server.API.Client,CSharpOutputPath=..\\Server.API.Client",
+  "defaultVariables": "ClientNamespace=Server.API.Client,CSharpOutputPath=../Server.API.Client",
   "documentGenerator": {
     "aspNetCoreToOpenApi": {
       "project": "Server.API.csproj",

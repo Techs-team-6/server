@@ -14,7 +14,7 @@ public sealed class ServerDBContext : DbContext
 
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<Token> Tokens { get; set; } = null!;
-    public DbSet<DedicatedMachine> DedicatedServers { get; set; } = null!;
+    public DbSet<DedicatedMachine> DedicatedMachines { get; set; } = null!;
     
     protected override void OnModelCreating(ModelBuilder builder)
     {

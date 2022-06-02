@@ -1,0 +1,6 @@
+﻿@page "/Master"
+@using Server.API.Client
+@inject MasterClient MasterClient
+<h3>Master</h3>
+
+<button class="btn btn-primary" @onclick="@(_ => MasterClient.ResetAsync().Wait())">Reset</button>

@@ -8,10 +8,4 @@ public class DedicatedMachine
     public string Label { get; set; }
     public string Description { get; set; }
     public DedicatedMachineState State { get; set; }
-
-    public enum DedicatedMachineState
-    {
-        Offline,
-        Online,
-    }
 }
