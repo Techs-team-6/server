@@ -26,11 +26,11 @@ public class Startup
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IBuildingService, DummyBuildingService>();
         services.AddScoped<IMasterService, MasterService>();
-        services.AddScoped<IInstanceService, InstanceService>();
         services.AddScoped(serviceProvider => new ProjectServiceClient(
             serviceProvider.GetService<IConfiguration>()!["ProjectBuildingServiceUrl"]!, new HttpClient()));
 
         services.AddScoped<IDedicatedMachineService, DedicatedMachineService>();
+        services.AddScoped<IInstanceService, InstanceService>();
         // services.AddScoped(serviceProvider => new DedicatedMachineHub(
         //     serviceProvider.GetRequiredService<IDedicatedMachineService>(), 50050));
 
