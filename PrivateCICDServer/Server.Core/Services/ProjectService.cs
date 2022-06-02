@@ -11,6 +11,7 @@ public class ProjectService : IProjectService
     private readonly ServerDBContext _context;
     private readonly IBuildingService _buildingService;
     private readonly ProjectServiceClient _projectServiceClient;
+    private readonly INameValidatorService _nameValidatorService = new NameValidatorService();
 
     public ProjectService(ServerDBContext context, IBuildingService buildingService,
         ProjectServiceClient projectServiceClient)
@@ -23,7 +24,10 @@ public class ProjectService : IProjectService
     public Project CreateProject(string name, string buildScript)
     {
         if (_context.Projects.Any(p => p.Name.Equals(name)))
-            throw new SerializationException("There is another project with such name");
+            throw new SerializationException($"There is another project with name: '{name}'");
+
+        if (!_nameValidatorService.IsValidProjectName(name))
+            throw new ServiceException($"Name '{name}' does not fit the pattern");
 
         var project = new Project
         {
@@ -57,6 +61,9 @@ public class ProjectService : IProjectService
 
     public void EditProject(Guid id, string name, string repository, string buildScript)
     {
+        if (!_nameValidatorService.IsValidProjectName(name))
+            throw new ServiceException($"Name '{name}' does not fit the pattern");
+        
         var project = GetProject(id);
         project.Name = name;
         project.Repository = repository;
