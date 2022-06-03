@@ -19,6 +19,7 @@ public class Instance
             Id = Guid.NewGuid(),
             PreviousState = State,
             CurrentState = State,
+            ChangeDate = DateTime.Now,
         };
         State = newState;
         StateChanges.Add(change);
