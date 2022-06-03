@@ -21,7 +21,7 @@ public class ServerDbContext : DbContext
         base.OnModelCreating(builder);
 
         builder.Entity<Project>()
-            .HasMany(p => p.Builds);
+            .OwnsMany(p => p.Builds);
 
         builder.Entity<Project>()
             .OwnsMany(t => t.Instances)
@@ -31,7 +31,7 @@ public class ServerDbContext : DbContext
         builder.Entity<Project>()
             .OwnsMany(t => t.Instances)
             .OwnsOne(t => t.InstanceConfig)
-            .HasOne(t => t.Build);
+            .OwnsOne(t => t.Build);
 
         builder.Entity<Project>()
             .OwnsMany(t => t.Instances)
