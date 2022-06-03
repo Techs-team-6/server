@@ -41,6 +41,30 @@
         </OurForm>
     </div>
 }
+
+<h4>Instances</h4>
+@foreach (var instance in project.Instances)
+{
+    <style>
+        .card {
+            width: 18rem;
+            margin: 1rem 0;
+        }
+        a {
+            color: inherit;
+            text-decoration: inherit;
+        }
+    </style>
+    <div class="card">
+        <div class="card-header">
+            @instance.Id
+        </div>
+        <OurForm>
+            <OurInput IsReadonly="true" Label="State" Value="@instance.State.ToString()"/>
+            <OurInput IsReadonly="true" Label="Machine Id" Value="@instance.InstanceConfig.DedicatedMachine.Id.ToString()"/>
+        </OurForm>
+    </div>
+}
 <a href="/Projects/">
     <button class="btn btn-primary">Back to list</button>
 </a>
