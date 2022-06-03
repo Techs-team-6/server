@@ -7,10 +7,10 @@ namespace Server.Core.Services;
 
 public class DedicatedMachineService : IDedicatedMachineService
 {
-    private readonly ServerDBContext _context;
+    private readonly ServerDbContext _context;
     private readonly ITokenService _tokenService;
 
-    public DedicatedMachineService(ServerDBContext context, ITokenService tokenService)
+    public DedicatedMachineService(ServerDbContext context, ITokenService tokenService)
     {
         _context = context;
         _tokenService = tokenService;

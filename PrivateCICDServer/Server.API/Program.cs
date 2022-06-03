@@ -8,6 +8,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        Environment.SetEnvironmentVariable("WITHOUT_PS", "true");
         var host = CreateHostBuilder(args).Build();
 
         CreateDbIfNotExists(host);
@@ -34,7 +35,7 @@ public class Program
         var services = scope.ServiceProvider;
         try
         {
-            var context = services.GetRequiredService<ServerDBContext>();
+            var context = services.GetRequiredService<ServerDbContext>();
             context.Database.EnsureCreated();
             context.SaveChanges();
         }

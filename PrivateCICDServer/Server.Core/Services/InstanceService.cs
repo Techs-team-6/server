@@ -6,8 +6,8 @@ namespace Server.Core.Services;
 
 public class InstanceService : IInstanceService
 {
-    private readonly ServerDBContext _context;
-    public InstanceService(ServerDBContext context)
+    private readonly ServerDbContext _context;
+    public InstanceService(ServerDbContext context)
     {
         _context = context;
     }

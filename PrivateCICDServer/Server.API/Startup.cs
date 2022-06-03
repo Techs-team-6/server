@@ -19,7 +19,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<ServerDBContext>(
+        services.AddDbContext<ServerDbContext>(
             options => options.UseSqlite(Configuration.GetConnectionString("Sqlite")!));
 
         services.AddScoped<ITokenService, TokenService>();

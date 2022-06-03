@@ -4,9 +4,9 @@ namespace Server.Core.Services;
 
 public class MasterService : IMasterService
 {
-    private readonly ServerDBContext _context;
+    private readonly ServerDbContext _context;
 
-    public MasterService(ServerDBContext context)
+    public MasterService(ServerDbContext context)
     {
         _context = context;
     }

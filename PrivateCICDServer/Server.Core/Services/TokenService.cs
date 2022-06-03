@@ -6,9 +6,9 @@ namespace Server.Core.Services;
 
 public class TokenService : ITokenService
 {
-    private readonly ServerDBContext _context;
+    private readonly ServerDbContext _context;
     
-    public TokenService(ServerDBContext context)
+    public TokenService(ServerDbContext context)
     {
         _context = context;
     }

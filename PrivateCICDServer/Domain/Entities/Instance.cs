@@ -4,9 +4,8 @@ namespace Domain.Entities;
 public class Instance
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-
-    public Guid ProjectId => Project.Id;
-    public Project Project { get; set; }
+    // public Guid ProjectId => Project.Id;
+    // public Project Project { get; set; }
     public InstanceConfig InstanceConfig { get; set; }
     public InstanceState State { get; private set; }
 
