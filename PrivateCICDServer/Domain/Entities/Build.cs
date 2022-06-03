@@ -1,4 +1,7 @@
-﻿namespace Domain.Entities;
+﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+
+namespace Domain.Entities;
 
 public class Build
 {
