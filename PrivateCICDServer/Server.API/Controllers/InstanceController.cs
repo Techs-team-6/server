@@ -17,9 +17,9 @@ public class InstanceController
     }
 
     [HttpPost]
-    public void RegisterInstance(Guid projectId, InstanceConfig config, InstanceState initialState)
+    public void RegisterInstance(Guid projectId, InstanceState initialState, string startString, Guid buildId, Guid machineId)
     {
-        _service.RegisterInstance(projectId, config, initialState);
+        _service.RegisterInstance(projectId, initialState, startString, buildId, machineId);
     }
     
     [HttpPost]

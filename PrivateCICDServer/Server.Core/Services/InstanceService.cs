@@ -11,14 +11,23 @@ public class InstanceService : IInstanceService
     {
         _context = context;
     }
-    public Instance RegisterInstance(Guid projectId, InstanceConfig instanceConfig, InstanceState initialState)
+    public Instance RegisterInstance(Guid projectId, InstanceState initialState, string startString, Guid buildId, Guid machineId)
     {
         var project = _context.Projects.FirstOrDefault(p => p.Id == projectId) ??
                       throw new ArgumentOutOfRangeException(nameof(projectId));
+        var build = project.Builds.FirstOrDefault(x => x.Id == buildId) ??
+                    throw new ArgumentOutOfRangeException(nameof(buildId));
+        var machine = _context.DedicatedMachines.FirstOrDefault(x => x.Id == machineId) ??
+                      throw new ArgumentOutOfRangeException(nameof(machineId));
         var instance = new Instance()
         {
             Id = Guid.NewGuid(),
-            InstanceConfig = instanceConfig,
+            InstanceConfig = new InstanceConfig()
+            {
+                Build = build,
+                DedicatedMachine = machine,
+                StartString = startString,
+            },
             StateChanges = {}
         };
 
