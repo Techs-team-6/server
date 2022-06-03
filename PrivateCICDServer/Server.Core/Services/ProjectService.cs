@@ -46,18 +46,30 @@ public class ProjectService : IProjectService
 
     public IReadOnlyList<Project> GetProjects()
     {
-        return _context.Projects.Include(p => p.Builds).ToList();
+        return _context.Projects.Include(p => p.Builds)
+            .Include(p => p.Instances)
+            .ThenInclude(p => p.InstanceConfig)
+            .ThenInclude(p => p.DedicatedMachine)
+            .ToList();
     }
 
     public Project GetProject(Guid id)
     {
-        return _context.Projects.Include(p => p.Builds).FirstOrDefault(p => p.Id.Equals(id))
+        return _context.Projects.Include(p => p.Builds)
+                   .Include(p => p.Instances)
+                   .ThenInclude(p => p.InstanceConfig)
+                   .ThenInclude(p => p.DedicatedMachine)
+                   .FirstOrDefault(p => p.Id.Equals(id))
                ?? throw new ServiceException($"Project with id '{id}' does not exist.");
     }
 
     public Project GetProject(string name)
     {
-        return _context.Projects.Include(p => p.Builds).FirstOrDefault(p => p.Name.Equals(name))
+        return _context.Projects
+                   .Include(p => p.Instances)
+                   .ThenInclude(p => p.InstanceConfig)
+                   .ThenInclude(p => p.DedicatedMachine)
+                   .Include(p => p.Builds).FirstOrDefault(p => p.Name.Equals(name))
                ?? throw new ServiceException($"Project with name '{name}' does not exist.");
     }
 
@@ -76,7 +88,11 @@ public class ProjectService : IProjectService
 
     public void DeleteProject(Guid id)
     {
-        var projectToDelete = _context.Projects.Include(p => p.Builds).FirstOrDefault(p => p.Id.Equals(id))
+        var projectToDelete = _context.Projects
+                                  .Include(p => p.Instances)
+                                  .ThenInclude(p => p.InstanceConfig)
+                                  .ThenInclude(p => p.DedicatedMachine)
+                                  .Include(p => p.Builds).FirstOrDefault(p => p.Id.Equals(id))
                               ?? throw new Exception($"Project with id '{id}' does not exist.");
         _context.Projects.Remove(projectToDelete);
         _context.SaveChanges();
@@ -84,7 +100,11 @@ public class ProjectService : IProjectService
 
     public IReadOnlyList<Project> FindProjects(string substring)
     {
-        return _context.Projects.Include(p => p.Builds).Where(p => p.Name.Contains(substring)).ToList();
+        return _context.Projects
+            .Include(p => p.Instances)
+            .ThenInclude(p => p.InstanceConfig)
+            .ThenInclude(p => p.DedicatedMachine)
+            .Include(p => p.Builds).Where(p => p.Name.Contains(substring)).ToList();
     }
 
     public Build AddBuild(Guid projectId, string buildName, Guid storageId)
