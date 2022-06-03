@@ -18,13 +18,13 @@ public class ProjectServiceTest
     [SetUp]
     public void SetUp()
     {
-        var buildingService = new DummyBuildingService();
-        var options = new DbContextOptionsBuilder<ServerDBContext>()
+        Environment.SetEnvironmentVariable("WITHOUT_PS", "true");
+        var options = new DbContextOptionsBuilder<ServerDbContext>()
             .UseInMemoryDatabase("Test").Options;
-        var context = new ServerDBContext(options);
+        var context = new ServerDbContext(options);
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
-        _service = new ProjectService(context, buildingService, new ProjectServiceClient("test", new HttpClient()));
+        _service = new ProjectService(context, new ProjectServiceClient("test", new HttpClient()));
         _names = Enumerable.Range(0, Count)
             .Select(i => $"name{i}")
             .ToList();
@@ -55,7 +55,6 @@ public class ProjectServiceTest
     {
         for (var i = 0; i < Count; i++)
         {
-            Console.WriteLine(_names[i]);
             _service.CreateProject(_names[i], _scripts[i]);
         }
         
@@ -78,8 +77,8 @@ public class ProjectServiceTest
         var storage2 = Guid.NewGuid();
         
         _service.AddBuild(project.Id, name1, storage1);
-        Assert.That(project.Builds, Has.Count.EqualTo(1));
+        Assert.That(_service.GetProject(_names[0]).Builds, Has.Count.EqualTo(1));
         _service.AddBuild(project.Id, name2, storage2);
-        Assert.That(project.Builds, Has.Count.EqualTo(2));
+        Assert.That(_service.GetProject(_names[0]).Builds, Has.Count.EqualTo(2));
     }
 }
