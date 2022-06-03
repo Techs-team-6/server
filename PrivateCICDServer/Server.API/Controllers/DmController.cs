@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Domain.Dto.DedicatedMachineDto;
+using Domain.Entities;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,5 +20,12 @@ public class DmController : ControllerBase
     public IReadOnlyCollection<DedicatedMachine> List()
     {
         return _service.List();
+    }
+    
+    [HttpPost]
+    public DedicatedMachine RegisterMachine(string token, string label, string description)
+    {
+        var dto = new RegisterDto(token, label, description);
+        return _service.RegisterMachine(dto);
     }
 }
