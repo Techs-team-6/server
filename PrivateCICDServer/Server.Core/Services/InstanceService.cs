@@ -11,6 +11,23 @@ public class InstanceService : IInstanceService
     {
         _context = context;
     }
+    public Instance RegisterInstance(Guid projectId, InstanceConfig instanceConfig, InstanceState initialState)
+    {
+        var project = _context.Projects.FirstOrDefault(p => p.Id == projectId) ??
+                      throw new ArgumentOutOfRangeException(nameof(projectId));
+        var instance = new Instance()
+        {
+            Id = Guid.NewGuid(),
+            InstanceConfig = instanceConfig,
+            StateChanges = {}
+        };
+
+        instance.ChangeInstanceState(initialState);
+
+        project.Instances.Add(instance);
+        _context.SaveChanges();
+        return instance;
+    }
     public void ChangeInstanceState(Guid projectId, Guid instanceId, InstanceState newState)
     {
         _context.Projects.FirstOrDefault(p => p.Id == projectId)?

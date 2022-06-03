@@ -17,6 +17,12 @@ public class InstanceController
     }
 
     [HttpPost]
+    public void RegisterInstance(Guid projectId, InstanceConfig config, InstanceState initialState)
+    {
+        _service.RegisterInstance(projectId, config, initialState);
+    }
+    
+    [HttpPost]
     public void ChangeInstanceState(Guid projectId, Guid instanceId, InstanceState newState)
     {
         _service.ChangeInstanceState(projectId, instanceId, newState);

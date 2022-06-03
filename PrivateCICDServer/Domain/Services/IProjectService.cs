@@ -18,5 +18,5 @@ public interface IProjectService
 
     public IReadOnlyList<Project> FindProjects(string substring);
 
-    public void AddBuild(Guid projectId, string buildName, Guid storageId);
+    public Build AddBuild(Guid projectId, string buildName, Guid storageId);
 }

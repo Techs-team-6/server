@@ -96,8 +96,8 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost]
-    public void AddBuild(Guid projectId, string buildName, Guid storageId)
+    public Build AddBuild(Guid projectId, string buildName, Guid storageId)
     {
-        _service.AddBuild(projectId, buildName, storageId);
+        return _service.AddBuild(projectId, buildName, storageId);
     }
 }

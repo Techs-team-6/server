@@ -87,7 +87,7 @@ public class ProjectService : IProjectService
         return _context.Projects.Include(p => p.Builds).Where(p => p.Name.Contains(substring)).ToList();
     }
 
-    public void AddBuild(Guid projectId, string buildName, Guid storageId)
+    public Build AddBuild(Guid projectId, string buildName, Guid storageId)
     {
         var project = GetProject(projectId);
 
@@ -100,5 +100,6 @@ public class ProjectService : IProjectService
         project.Builds.Add(build);
         _context.Update(project);
         _context.SaveChanges();
+        return build;
     }
 }
