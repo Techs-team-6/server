@@ -25,7 +25,7 @@ public sealed class ServerDBContext : DbContext
         builder.Entity<Instance>()
             .OwnsMany(t => t.StateChanges);
         builder.Entity<Project>()
-            .HasMany(t => t.Builds);
+            .OwnsMany(t => t.Builds);
 
         builder.Entity<Token>();
         builder.Entity<DedicatedMachine>();
