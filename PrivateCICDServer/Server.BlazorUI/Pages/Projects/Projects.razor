@@ -1,5 +1,6 @@
 ﻿@page "/Projects"
 @using Server.API.Client
+@using Server.API.Client.Contracts
 @inject ProjectClient ProjectClient
 @inject NavigationManager NavigationManager
 <h3>Projects</h3>
@@ -35,16 +36,23 @@
 
     private void OnCreate(string name)
     {
-        // var project = ProjectClient.CreateAsync(name, "build").Result;
-        // NavigationManager.NavigateTo($"/Projects/{project.Name}/");
-        try
+        var response = ProjectClient.CreateAsync(name, "build").Result;
+        Console.WriteLine(response.StatusCode);
+
+        if (response.StatusCode == 200)
         {
-            var response = ProjectClient.CreateAsync(name, "build").Result;
-            Console.WriteLine(response.StatusCode);
+        // good
+            NavigationManager.NavigateTo($"projects/{response.Project.Name}");
         }
-        catch (Exception e)
+        else if (response.StatusCode == 228) // todo get rid of magic numbers
         {
-            Console.WriteLine(e);
+        // bad request but we handle it
+            NavigationManager.NavigateTo("/");
         }
+        else
+        {
+        // idk what is that
+        }
+
     }
 }

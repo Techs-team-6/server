@@ -6,14 +6,11 @@
 
 @{
     var response = ProjectClient.GetAsync(ProjectName).Result;
-    var project = new Project
-    {
-        Id = Guid.Parse(response.Headers["Id"].First()),
-        Name = response.Headers["Name"].First(),
-        Repository = response.Headers["Repository"].First(),
-        BuildScript = response.Headers["BuildScript"].First(),
-
-    };
+    if (response.StatusCode != 200)
+        throw new Exception($"status code {response.StatusCode}");
+        
+    var project = response.Project;
+    
     <OurForm>
         <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
         <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>

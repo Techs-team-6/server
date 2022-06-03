@@ -1,6 +1,8 @@
-﻿using Domain.Entities;
+﻿using Domain.Dto.Responses;
+using Domain.Entities;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Server.API.Controllers;
 
@@ -22,37 +24,62 @@ public class ProjectController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult Get(string name)
+    public ProjectResponse Get(string name)
     {
         // TODO Show ServiceException messages as a popup for user
         try
         {
-            var result = _service.GetProject(name);
-            var response = Ok(result.Name);
-            Console.WriteLine(response.StatusCode);
+            var project = _service.GetProject(name);
+            var response = new ProjectResponse
+            {
+                StatusCode = 200,   // todo get rid of magic values
+                Description = "OK",
+                Project = project,
+            };
+
             return response;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return BadRequest("Project can't be returned");
+            var response = new ProjectResponse
+            {
+                StatusCode = 228,   // todo get rid of magic values
+                Description = "Error",
+                Project = null,
+            };
+
+            return response;
         }
     }
 
     [HttpPost]
-    public ActionResult Create(string name, string buildScript)
+    public ProjectResponse Create(string name, string buildScript)
     {
         try
         {
-            var result = _service.CreateProject(name, buildScript);
-            var response = Ok(result.Name);
-            Console.WriteLine(response.StatusCode);
+            var project = _service.CreateProject(name, buildScript);
+            
+            var response = new ProjectResponse
+            {
+                StatusCode = 200,   // todo get rid of magic values
+                Description = "OK",
+                Project = project,
+            };
+
             return response;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return BadRequest("Project can't be created");
+            var response = new ProjectResponse
+            {
+                StatusCode = 228,   // todo get rid of magic values
+                Description = "Error",
+                Project = null,
+            };
+
+            return response;
         }
     }
     
