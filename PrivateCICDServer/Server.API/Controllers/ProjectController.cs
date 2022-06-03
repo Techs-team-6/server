@@ -22,16 +22,38 @@ public class ProjectController : ControllerBase
     }
     
     [HttpGet]
-    public Project Get(string name)
+    public ActionResult Get(string name)
     {
         // TODO Show ServiceException messages as a popup for user
-        return _service.GetProject(name);
+        try
+        {
+            var result = _service.GetProject(name);
+            var response = Ok(result.Name);
+            Console.WriteLine(response.StatusCode);
+            return response;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Project can't be returned");
+        }
     }
 
     [HttpPost]
-    public Project Create(string name, string buildScript)
+    public ActionResult Create(string name, string buildScript)
     {
-        return _service.CreateProject(name, buildScript);
+        try
+        {
+            var result = _service.CreateProject(name, buildScript);
+            var response = Ok(result.Name);
+            Console.WriteLine(response.StatusCode);
+            return response;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return BadRequest("Project can't be created");
+        }
     }
     
     [HttpPost]
