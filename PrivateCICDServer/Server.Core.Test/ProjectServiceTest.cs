@@ -18,13 +18,13 @@ public class ProjectServiceTest
     [SetUp]
     public void SetUp()
     {
-        Environment.SetEnvironmentVariable("WITHOUT_PS", "true");
-        var options = new DbContextOptionsBuilder<ServerDbContext>()
+        var buildingService = new DummyBuildingService();
+        var options = new DbContextOptionsBuilder<ServerDBContext>()
             .UseInMemoryDatabase("Test").Options;
-        var context = new ServerDbContext(options);
+        var context = new ServerDBContext(options);
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
-        _service = new ProjectService(context, new ProjectServiceClient("test", new HttpClient()));
+        _service = new ProjectService(context, buildingService, new ProjectServiceClient("test", new HttpClient()));
         _names = Enumerable.Range(0, Count)
             .Select(i => $"name{i}")
             .ToList();

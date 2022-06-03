@@ -1,6 +1,8 @@
-﻿using Domain.Entities;
+﻿using Domain.Dto.Responses;
+using Domain.Entities;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Server.API.Controllers;
 
@@ -22,16 +24,63 @@ public class ProjectController : ControllerBase
     }
     
     [HttpGet]
-    public Project Get(string name)
+    public ProjectResponse Get(string name)
     {
         // TODO Show ServiceException messages as a popup for user
-        return _service.GetProject(name);
+        try
+        {
+            var project = _service.GetProject(name);
+            var response = new ProjectResponse
+            {
+                StatusCode = 200,   // todo get rid of magic values
+                Description = "OK",
+                Project = project,
+            };
+
+            return response;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var response = new ProjectResponse
+            {
+                StatusCode = 228,   // todo get rid of magic values
+                Description = "Error",
+                Project = null,
+            };
+
+            return response;
+        }
     }
 
     [HttpPost]
-    public Project Create(string name, string buildScript)
+    public ProjectResponse Create(string name, string buildScript)
     {
-        return _service.CreateProject(name, buildScript);
+        try
+        {
+            var project = _service.CreateProject(name, buildScript);
+            
+            var response = new ProjectResponse
+            {
+                StatusCode = 200,   // todo get rid of magic values
+                Description = "OK",
+                Project = project,
+            };
+
+            return response;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            var response = new ProjectResponse
+            {
+                StatusCode = 228,   // todo get rid of magic values
+                Description = "Error",
+                Project = null,
+            };
+
+            return response;
+        }
     }
     
     [HttpPost]
