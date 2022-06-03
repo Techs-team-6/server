@@ -35,7 +35,16 @@
 
     private void OnCreate(string name)
     {
-        var project = ProjectClient.CreateAsync(name, "build").Result;
-        NavigationManager.NavigateTo($"/Projects/{project.Name}/");
+        // var project = ProjectClient.CreateAsync(name, "build").Result;
+        // NavigationManager.NavigateTo($"/Projects/{project.Name}/");
+        try
+        {
+            var response = ProjectClient.CreateAsync(name, "build").Result;
+            Console.WriteLine(response.StatusCode);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }
