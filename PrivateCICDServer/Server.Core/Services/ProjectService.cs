@@ -93,7 +93,7 @@ public class ProjectService : IProjectService
                                   .ThenInclude(p => p.InstanceConfig)
                                   .ThenInclude(p => p.DedicatedMachine)
                                   .Include(p => p.Builds).FirstOrDefault(p => p.Id.Equals(id))
-                              ?? throw new Exception($"Project with id '{id}' does not exist.");
+                              ?? throw new ServiceException($"Project with id '{id}' does not exist.");
         _context.Projects.Remove(projectToDelete);
         _context.SaveChanges();
     }
