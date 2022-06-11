@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using DMConnect.Share;
+using DMConnect.Share.Tools;
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Tools;
 
@@ -18,6 +19,7 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
 
     public Guid MachineId { get; private set; }
     private IDedicatedMachineAgent _agent = null!;
+    private readonly CancellationTokenSource _cancellationTokenSource;
 
     public DedicatedMachineHubClient(IPEndPoint endPoint, RegisterDto credentials)
     {
@@ -25,6 +27,7 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
         _credentials = credentials;
         _tcpClient = new TcpClient();
         _thread = new Thread(Run);
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 
     public void SetMachineAgent(IDedicatedMachineAgent agent)
@@ -37,9 +40,16 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
         if (_agent is null)
             throw new Exception("SetMachineAgent must be called before Start");
         _tcpClient.Connect(_endPoint);
-        _stream = _tcpClient.GetStream();
+        _stream = new CancellableStreamWrapper(_tcpClient.GetStream(), _cancellationTokenSource.Token);
         Auth();
         _thread.Start();
+    }
+
+    public void Stop()
+    {
+        _cancellationTokenSource.Cancel();
+        if (_thread.ThreadState == ThreadState.Running)
+            _thread.Join();
     }
 
     private void Run()
@@ -51,7 +61,14 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine(e);
+            if (ExceptionUtils.IsOperationCanceled(e))
+            {
+                Console.WriteLine("Caught cancel operation");
+            }
+            else
+            {
+                Console.Error.WriteLine(e);                
+            }
         }
         finally
         {
@@ -71,7 +88,7 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
                     _agent.StartInstance(startInstanceDto);
                     break;
                 default:
-                    throw new Exception("Unexpected action : " + action);
+                    throw new Exception("Unexpected action: " + action);
             }
         }
     }
