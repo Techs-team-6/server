@@ -82,7 +82,7 @@ public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
                 _id = dto.Id;
             }
             
-            _stream.Write(_id);
+            _stream.Write(new AuthResultDto(true, _id));
             _machineService.SetState(new SetStateDto(_id, DedicatedMachineState.Online));
         }
         else
