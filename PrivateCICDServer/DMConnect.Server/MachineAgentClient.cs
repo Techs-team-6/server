@@ -7,18 +7,18 @@ using Domain.Tools;
 
 namespace DMConnect.Server;
 
-public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
+public class MachineAgentClient : IDedicatedMachineAgent
 {
     private readonly IDedicatedMachineService _machineService;
     private readonly TcpClient _client;
-    private readonly Action<RemoteDedicatedMachineAgent> _onMachineAgentLeave;
+    private readonly Action<MachineAgentClient> _onMachineAgentLeave;
     private readonly Stream _stream;
     private readonly Thread _thread;
 
     public Guid Id { get; private set; }
 
-    public RemoteDedicatedMachineAgent(IDedicatedMachineService machineService,
-        TcpClient client, Action<RemoteDedicatedMachineAgent> onMachineAgentLeave)
+    public MachineAgentClient(IDedicatedMachineService machineService,
+        TcpClient client, Action<MachineAgentClient> onMachineAgentLeave)
     {
         _machineService = machineService;
         _client = client;

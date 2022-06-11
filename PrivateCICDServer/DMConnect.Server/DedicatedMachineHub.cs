@@ -7,7 +7,7 @@ namespace DMConnect.Server;
 public class DedicatedMachineHub
 {
     private readonly IDedicatedMachineService _machineService;
-    private readonly List<RemoteDedicatedMachineAgent> _clients = new();
+    private readonly List<MachineAgentClient> _clients = new();
 
     public DedicatedMachineHub(IDedicatedMachineService service, int port)
     {
@@ -23,7 +23,7 @@ public class DedicatedMachineHub
         while (true)
         {
             var client = tcpListener.AcceptTcpClient();
-            var machineAgent = new RemoteDedicatedMachineAgent(
+            var machineAgent = new MachineAgentClient(
                 _machineService,
                 client,
                 OnMachineAgentLeave);
@@ -32,7 +32,7 @@ public class DedicatedMachineHub
         }
     }
     
-    private void OnMachineAgentLeave(RemoteDedicatedMachineAgent client)
+    private void OnMachineAgentLeave(MachineAgentClient client)
     {
         _clients.Remove(client);
     }
