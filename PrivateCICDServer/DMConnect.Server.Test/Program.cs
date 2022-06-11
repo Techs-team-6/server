@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Services;
 
 var hub = new DedicatedMachineHub(new DedicatedMachineService(), 50050);
+hub.Start();
 
 Console.WriteLine("Sleeping");
 Thread.Sleep(1000_000);
@@ -26,6 +27,6 @@ internal class DedicatedMachineService : IDedicatedMachineService
 
     public List<DedicatedMachine> List()
     {
-        return null;
+        return new List<DedicatedMachine>();
     }
 }

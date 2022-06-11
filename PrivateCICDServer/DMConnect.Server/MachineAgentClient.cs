@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using DMConnect.Share;
+using DMConnect.Share.Tools;
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
@@ -18,12 +19,12 @@ public class MachineAgentClient : IDedicatedMachineAgent
     public Guid Id { get; private set; }
 
     public MachineAgentClient(IDedicatedMachineService machineService,
-        TcpClient client, Action<MachineAgentClient> onMachineAgentLeave)
+        TcpClient client, Action<MachineAgentClient> onMachineAgentLeave, CancellationToken cancellationToken)
     {
         _machineService = machineService;
         _client = client;
         _onMachineAgentLeave = onMachineAgentLeave;
-        _stream = client.GetStream();
+        _stream = new CancellableStreamWrapper(client.GetStream(), cancellationToken);
         _thread = new Thread(Serve);
     }
 
@@ -41,8 +42,14 @@ public class MachineAgentClient : IDedicatedMachineAgent
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine(e);
-            Console.Error.WriteLine("Disconnecting");
+            if (ExceptionUtils.IsOperationCanceled(e))
+            {
+                Console.WriteLine("Caught cancel operation");
+            }
+            else
+            {
+                Console.Error.WriteLine(e);              
+            }
         }
         finally
         {

@@ -7,31 +7,63 @@ namespace DMConnect.Server;
 public class DedicatedMachineHub
 {
     private readonly IDedicatedMachineService _machineService;
+    private readonly int _port;
+    private readonly Thread _thread;
     private readonly List<MachineAgentClient> _clients = new();
+
+    private readonly CancellationTokenSource _cancellationTokenSource;
 
     public DedicatedMachineHub(IDedicatedMachineService service, int port)
     {
         _machineService = service;
-        new Thread(() => Start(port)).Start();
+        _port = port;
+        _thread = new Thread(ListenLoop);
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 
-    private void Start(int port)
+    public void Start()
     {
-        var tcpListener = new TcpListener(IPAddress.Loopback, port);
+        _thread.Start();
+    }
+
+    public void Stop()
+    {
+        _cancellationTokenSource.Cancel();
+        _thread.Join();
+    }
+
+    private async void ListenLoop()
+    {
+        var tcpListener = new TcpListener(IPAddress.Loopback, _port);
         tcpListener.Start();
-        Console.WriteLine($"{GetType().Name} began listening port {port}");
-        while (true)
+        Console.WriteLine($"{GetType().Name} began listening port {_port}");
+        
+        try
         {
-            var client = tcpListener.AcceptTcpClient();
-            var machineAgent = new MachineAgentClient(
-                _machineService,
-                client,
-                OnMachineAgentLeave);
-            _clients.Add(machineAgent);
-            machineAgent.Start();
+            while (true)
+            {
+                var client = await tcpListener.AcceptTcpClientAsync(_cancellationTokenSource.Token);
+
+                var machineAgent = new MachineAgentClient(
+                    _machineService,
+                    client,
+                    OnMachineAgentLeave,
+                    _cancellationTokenSource.Token);
+                _clients.Add(machineAgent);
+                machineAgent.Start();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Caught cancel operation");
+        }
+        finally
+        {
+            tcpListener.Stop();
+            Console.WriteLine("Stopped");
         }
     }
-    
+
     private void OnMachineAgentLeave(MachineAgentClient client)
     {
         _clients.Remove(client);
