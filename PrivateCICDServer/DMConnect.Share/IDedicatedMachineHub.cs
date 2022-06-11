@@ -4,7 +4,7 @@ namespace DMConnect.Share;
 
 public interface IDedicatedMachineHub
 {
-    void InstanceOutErr(InstanceStdOutDto dto);
+    void InstanceStdOut(InstanceStdOutDto dto);
     
     void InstanceStdErr(InstanceStdErrDto dto);
 }

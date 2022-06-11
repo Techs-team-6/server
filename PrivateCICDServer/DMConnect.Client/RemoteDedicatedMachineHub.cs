@@ -70,7 +70,7 @@ public class RemoteDedicatedMachineHub : IDedicatedMachineHub
         }
     }
 
-    public void InstanceOutErr(InstanceStdOutDto dto)
+    public void InstanceStdOut(InstanceStdOutDto dto)
     {
         _stream.Write(dto);
     }
