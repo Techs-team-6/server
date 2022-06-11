@@ -15,9 +15,8 @@ internal class DedicatedMachineService : IDedicatedMachineService
         return new DedicatedMachine { Id = Guid.NewGuid() };
     }
 
-    public bool AuthMachine(AuthDto dto)
+    public void AuthMachine(AuthDto dto)
     {
-        return true;
     }
 
     public void SetState(SetStateDto dto)

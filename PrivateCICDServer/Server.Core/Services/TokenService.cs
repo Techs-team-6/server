@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Services;
-using Server.Core.Tools;
+using Domain.Tools;
 
 namespace Server.Core.Services;
 

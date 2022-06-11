@@ -77,8 +77,7 @@ public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
             else
             {
                 var dto = _stream.Read<AuthDto>();
-                if (!_machineService.AuthMachine(dto))
-                    throw new Exception("Wrong credentials");
+                _machineService.AuthMachine(dto);
             
                 _id = dto.Id;
             }
