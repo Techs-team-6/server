@@ -3,23 +3,26 @@ using DMConnect.Share;
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
-using Action = Domain.Dto.DedicatedMachineDto.Action;
+using Domain.Tools;
 
 namespace DMConnect.Server;
 
 public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
 {
-    private readonly TcpClient _client;
-    private readonly Stream _stream;
     private readonly IDedicatedMachineService _machineService;
+    private readonly TcpClient _client;
+    private readonly Action<RemoteDedicatedMachineAgent> _onMachineAgentLeave;
+    private readonly Stream _stream;
     private readonly Thread _thread;
 
-    private Guid _id;
+    public Guid Id { get; private set; }
 
-    public RemoteDedicatedMachineAgent(IDedicatedMachineService machineService, TcpClient client)
+    public RemoteDedicatedMachineAgent(IDedicatedMachineService machineService,
+        TcpClient client, Action<RemoteDedicatedMachineAgent> onMachineAgentLeave)
     {
         _machineService = machineService;
         _client = client;
+        _onMachineAgentLeave = onMachineAgentLeave;
         _stream = client.GetStream();
         _thread = new Thread(Serve);
     }
@@ -28,26 +31,13 @@ public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
     {
         _thread.Start();
     }
-    
+
     private void Serve()
     {
         try
         {
-            AuthOperation();
-
-            while (true)
-            {
-                var action = _stream.ReadAction();
-                switch (action)
-                {
-                    case Action.InstanceStdOut:
-                        throw new NotImplementedException();
-                    case Action.InstanceStdErr:
-                        throw new NotImplementedException();
-                    default:
-                        throw new Exception("Wrong action : " + action);
-                }
-            }
+            AuthLoop();
+            ServeLoop();
         }
         catch (Exception e)
         {
@@ -57,42 +47,70 @@ public class RemoteDedicatedMachineAgent : IDedicatedMachineAgent
         finally
         {
             _client.Close();
-            if (_id != Guid.Empty)
-                _machineService.SetState(new SetStateDto(_id, DedicatedMachineState.Offline));
+            _onMachineAgentLeave.Invoke(this);
+            if (Id != Guid.Empty)
+                _machineService.SetState(new SetStateDto(Id, DedicatedMachineState.Offline));
         }
     }
 
-    private void AuthOperation()
+    private void AuthLoop()
     {
-        var action = _stream.ReadAction();
-        if (action is Action.Authenthicate or Action.Register)
+        while (Id == Guid.Empty)
         {
-            if (action == Action.Register)
+            switch (_stream.ReadActionDto())
             {
-                var dto = _stream.Read<RegisterDto>();
-                var dedicatedMachine = _machineService.RegisterMachine(dto);
-            
-                _id = dedicatedMachine.Id;
+                case AuthDto authDto:
+                    try
+                    {
+                        _machineService.AuthMachine(authDto);
+                        Id = authDto.Id;
+                    }
+                    catch (AuthException)
+                    {
+                        _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
+                    }
+
+                    break;
+                case RegisterDto registerDto:
+                    try
+                    {
+                        var dedicatedMachine = _machineService.RegisterMachine(registerDto);
+                        Id = dedicatedMachine.Id;
+                    }
+                    catch (InvalidTokenException)
+                    {
+                        _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
+                    }
+
+                    break;
+                default:
+                    _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
+                    break;
             }
-            else
-            {
-                var dto = _stream.Read<AuthDto>();
-                _machineService.AuthMachine(dto);
-            
-                _id = dto.Id;
-            }
-            
-            _stream.Write(new AuthResultDto(true, _id));
-            _machineService.SetState(new SetStateDto(_id, DedicatedMachineState.Online));
         }
-        else
+
+        _stream.WriteActionDto(new AuthResultDto(true, Id));
+    }
+
+    private void ServeLoop()
+    {
+        while (true)
         {
-            throw new Exception("Authentication is required");
+            var action = _stream.ReadActionDto();
+            switch (action)
+            {
+                case InstanceStdOutDto instanceStdOutDto:
+                    throw new NotImplementedException();
+                case InstanceStdErrDto instanceStdErrDto:
+                    throw new NotImplementedException();
+                default:
+                    throw new Exception("Unexpected action: " + action);
+            }
         }
     }
 
     public void StartInstance(StartInstanceDto dto)
     {
-        _stream.Write(dto);
+        _stream.WriteActionDto(dto);
     }
 }

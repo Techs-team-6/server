@@ -1,28 +1,24 @@
-﻿using System.Text;
+﻿using System.Collections.Immutable;
+using System.Text;
 using Domain.Dto.DedicatedMachineDto;
 using Newtonsoft.Json;
-using Action = Domain.Dto.DedicatedMachineDto.Action;
 
 namespace DMConnect.Share;
 
 public static class StreamExtension
 {
-    public static T Read<T>(this Stream stream)
+    public static IDedicateMachineDto ReadActionDto(this Stream stream)
     {
-        var str = ReadString(stream);
-        return JsonConvert.DeserializeObject<T>(str)!;
+        var typeName = stream.ReadString();
+        var type = ActionTypeByName[typeName];
+        var json = ReadString(stream);
+        return (IDedicateMachineDto)JsonConvert.DeserializeObject(json, type)!;
     }
 
-    public static void Write<T>(this Stream stream, T value)
+    public static void WriteActionDto(this Stream stream, IDedicateMachineDto value)
     {
-        if (value is IDedicateMachineDto dto)
-            stream.WriteInt((int)dto.Action);
+        stream.WriteString(value.GetType().Name);
         stream.WriteString(JsonConvert.SerializeObject(value));
-    }
-
-    public static Action ReadAction(this Stream stream)
-    {
-        return (Action)stream.ReadInt();
     }
 
     private static int ReadInt(this Stream stream)
@@ -50,7 +46,7 @@ public static class StreamExtension
         stream.WriteInt(bytes.Length);
         stream.Write(bytes, 0, bytes.Length);
     }
-    
+
     /// <summary>
     /// Reads exact bytes count
     /// </summary>
@@ -81,4 +77,17 @@ public static class StreamExtension
 
         return bytes;
     }
+
+    private static readonly List<Type> ActionTypes = new()
+    {
+        typeof(AuthDto),
+        typeof(RegisterDto),
+        typeof(AuthResultDto),
+        typeof(StartInstanceDto),
+        typeof(InstanceStdOutDto),
+        typeof(InstanceStdErrDto),
+    };
+
+    private static readonly ImmutableDictionary<string, Type> ActionTypeByName =
+        ActionTypes.ToImmutableDictionary(type => type.Name);
 }

@@ -3,7 +3,6 @@ using System.Net.Sockets;
 using DMConnect.Share;
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Tools;
-using Action = Domain.Dto.DedicatedMachineDto.Action;
 
 namespace DMConnect.Client;
 
@@ -65,14 +64,14 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
     {
         while (true)
         {
-            var action = _stream.ReadAction();
+            var action = _stream.ReadActionDto();
             switch (action)
             {
-                case Action.StartInstance:
-                    _agent.StartInstance(_stream.Read<StartInstanceDto>());
+                case StartInstanceDto startInstanceDto:
+                    _agent.StartInstance(startInstanceDto);
                     break;
                 default:
-                    throw new Exception("Unknown action : " + action);
+                    throw new Exception("Unexpected action : " + action);
             }
         }
     }
@@ -91,10 +90,9 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
             return false;
 
         var id = Guid.Parse(File.ReadAllText(MachineIdFileName));
-        _stream.Write(new AuthDto(id, _credentials.TokenString));
+        _stream.WriteActionDto(new AuthDto(id, _credentials.TokenString));
 
-        var actionCode = _stream.ReadAction();
-        var authResult = _stream.Read<AuthResultDto>();
+        var authResult = (_stream.ReadActionDto() as AuthResultDto)!;
         if (!authResult.IsSuccessful)
         {
             File.Delete(MachineIdFileName);
@@ -107,9 +105,8 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
 
     private bool TryRegister()
     {
-        _stream.Write(_credentials);
-        var actionCode = _stream.ReadAction();
-        var authResult = _stream.Read<AuthResultDto>();
+        _stream.WriteActionDto(_credentials);
+        var authResult = (_stream.ReadActionDto() as AuthResultDto)!;
         if (!authResult.IsSuccessful)
             return false;
 
@@ -120,11 +117,11 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
 
     public void InstanceStdOut(InstanceStdOutDto dto)
     {
-        _stream.Write(dto);
+        _stream.WriteActionDto(dto);
     }
 
     public void InstanceStdErr(InstanceStdErrDto dto)
     {
-        _stream.Write(dto);
+        _stream.WriteActionDto(dto);
     }
 }
