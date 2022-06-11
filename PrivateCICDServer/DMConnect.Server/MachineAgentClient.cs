@@ -36,6 +36,12 @@ public class MachineAgentClient : IDedicatedMachineAgent
         _thread.Start();
     }
 
+    public void Join()
+    {
+        if (_thread.ThreadState != ThreadState.Unstarted)
+            _thread.Join();
+    }
+
     private void Serve()
     {
         try
@@ -104,6 +110,7 @@ public class MachineAgentClient : IDedicatedMachineAgent
 
         _stream.WriteActionDto(new AuthResultDto(true, Id));
         _logger.LogInformation("Auth successful");
+        _machineService.SetState(new SetStateDto(Id, DedicatedMachineState.Online));
     }
 
     private void ServeLoop()

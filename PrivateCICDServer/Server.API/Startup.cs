@@ -1,8 +1,7 @@
-﻿using DMConnect.Server;
-using Domain.Services;
-using Domain.States;
+﻿using Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using ProjectServiceApiClient;
+using Server.API.Services;
 using Server.Core;
 using Server.Core.Services;
 
@@ -31,8 +30,11 @@ public class Startup
 
         services.AddScoped<IDedicatedMachineService, DedicatedMachineService>();
         services.AddScoped<IInstanceService, InstanceService>();
-        // services.AddScoped(serviceProvider => new DedicatedMachineHub(
-        //     serviceProvider.GetRequiredService<IDedicatedMachineService>(), 50050));
+
+        services.AddHostedService(serviceProvider => new HostedHubService(
+            serviceProvider.GetRequiredService<IServiceScopeFactory>(),
+            serviceProvider.GetRequiredService<ILoggerFactory>(),
+            50050));
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

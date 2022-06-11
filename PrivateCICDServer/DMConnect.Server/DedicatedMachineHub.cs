@@ -35,6 +35,10 @@ public class DedicatedMachineHub
     {
         _cancellationTokenSource.Cancel();
         _thread.Join();
+        foreach (var client in _clients)
+        {
+            client.Join();
+        }
     }
 
     private async void ListenLoop()
