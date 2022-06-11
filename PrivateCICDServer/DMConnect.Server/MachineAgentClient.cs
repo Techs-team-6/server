@@ -5,11 +5,13 @@ using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
 using Domain.Tools;
+using Microsoft.Extensions.Logging;
 
 namespace DMConnect.Server;
 
 public class MachineAgentClient : IDedicatedMachineAgent
 {
+    private readonly ILogger<MachineAgentClient> _logger;
     private readonly IDedicatedMachineService _machineService;
     private readonly TcpClient _client;
     private readonly Action<MachineAgentClient> _onMachineAgentLeave;
@@ -18,9 +20,10 @@ public class MachineAgentClient : IDedicatedMachineAgent
 
     public Guid Id { get; private set; }
 
-    public MachineAgentClient(IDedicatedMachineService machineService,
+    public MachineAgentClient(ILogger<MachineAgentClient> logger, IDedicatedMachineService machineService,
         TcpClient client, Action<MachineAgentClient> onMachineAgentLeave, CancellationToken cancellationToken)
     {
+        _logger = logger;
         _machineService = machineService;
         _client = client;
         _onMachineAgentLeave = onMachineAgentLeave;
@@ -37,6 +40,7 @@ public class MachineAgentClient : IDedicatedMachineAgent
     {
         try
         {
+            _logger.LogInformation("Started");
             AuthLoop();
             ServeLoop();
         }
@@ -44,11 +48,11 @@ public class MachineAgentClient : IDedicatedMachineAgent
         {
             if (ExceptionUtils.IsOperationCanceled(e))
             {
-                Console.WriteLine("Caught cancel operation");
+                _logger.LogInformation("Caught cancel operation");
             }
             else
             {
-                Console.Error.WriteLine(e);              
+                _logger.LogError(e, "Exception acquired");                
             }
         }
         finally
@@ -57,6 +61,7 @@ public class MachineAgentClient : IDedicatedMachineAgent
             _onMachineAgentLeave.Invoke(this);
             if (Id != Guid.Empty)
                 _machineService.SetState(new SetStateDto(Id, DedicatedMachineState.Offline));
+            _logger.LogInformation("Stopped");
         }
     }
 
@@ -72,11 +77,11 @@ public class MachineAgentClient : IDedicatedMachineAgent
                         _machineService.AuthMachine(authDto);
                         Id = authDto.Id;
                     }
-                    catch (AuthException)
+                    catch (AuthException e)
                     {
                         _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
+                        _logger.LogInformation("Auth failed: {reason}", e.Message);
                     }
-
                     break;
                 case RegisterDto registerDto:
                     try
@@ -84,19 +89,21 @@ public class MachineAgentClient : IDedicatedMachineAgent
                         var dedicatedMachine = _machineService.RegisterMachine(registerDto);
                         Id = dedicatedMachine.Id;
                     }
-                    catch (InvalidTokenException)
+                    catch (InvalidTokenException e)
                     {
                         _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
+                        _logger.LogInformation("Register failed: {reason}", e.Message);
                     }
-
                     break;
                 default:
                     _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
+                    _logger.LogInformation("Auth failed");
                     break;
             }
         }
 
         _stream.WriteActionDto(new AuthResultDto(true, Id));
+        _logger.LogInformation("Auth successful");
     }
 
     private void ServeLoop()

@@ -1,11 +1,14 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Domain.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DMConnect.Server;
 
 public class DedicatedMachineHub
 {
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<DedicatedMachineHub> _logger;
     private readonly IDedicatedMachineService _machineService;
     private readonly int _port;
     private readonly Thread _thread;
@@ -13,10 +16,12 @@ public class DedicatedMachineHub
 
     private readonly CancellationTokenSource _cancellationTokenSource;
 
-    public DedicatedMachineHub(IDedicatedMachineService service, int port)
+    public DedicatedMachineHub(ILoggerFactory loggerFactory, IDedicatedMachineService service, int port)
     {
+        _loggerFactory = loggerFactory;
         _machineService = service;
         _port = port;
+        _logger = _loggerFactory.CreateLogger<DedicatedMachineHub>();
         _thread = new Thread(ListenLoop);
         _cancellationTokenSource = new CancellationTokenSource();
     }
@@ -36,15 +41,16 @@ public class DedicatedMachineHub
     {
         var tcpListener = new TcpListener(IPAddress.Loopback, _port);
         tcpListener.Start();
-        Console.WriteLine($"{GetType().Name} began listening port {_port}");
-        
+        _logger.LogInformation("Started to listen to port {Port}", _port);
+
         try
         {
             while (true)
             {
                 var client = await tcpListener.AcceptTcpClientAsync(_cancellationTokenSource.Token);
+                _logger.LogInformation("Accepted tcp client");
 
-                var machineAgent = new MachineAgentClient(
+                var machineAgent = new MachineAgentClient(_loggerFactory.CreateLogger<MachineAgentClient>(),
                     _machineService,
                     client,
                     OnMachineAgentLeave,
@@ -55,12 +61,12 @@ public class DedicatedMachineHub
         }
         catch (OperationCanceledException)
         {
-            Console.WriteLine("Caught cancel operation");
+            _logger.LogInformation("Caught cancel operation");
         }
         finally
         {
             tcpListener.Stop();
-            Console.WriteLine("Stopped");
+            _logger.LogInformation("Stopped");
         }
     }
 

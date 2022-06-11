@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMConnect.Server.Test", "DM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Core.Test", "Server.Core.Test\Server.Core.Test.csproj", "{C1249A6C-FDB6-4A79-AB48-F9CEE2E291E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DMConnect.Test", "DMConnect.Test\DMConnect.Test.csproj", "{AB5CF98C-847D-44CC-A165-06571185B7B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,9 @@ Global
 		{C1249A6C-FDB6-4A79-AB48-F9CEE2E291E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1249A6C-FDB6-4A79-AB48-F9CEE2E291E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1249A6C-FDB6-4A79-AB48-F9CEE2E291E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB5CF98C-847D-44CC-A165-06571185B7B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB5CF98C-847D-44CC-A165-06571185B7B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB5CF98C-847D-44CC-A165-06571185B7B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB5CF98C-847D-44CC-A165-06571185B7B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

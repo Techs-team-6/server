@@ -2,8 +2,11 @@
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
+using Microsoft.Extensions.Logging;
 
-var hub = new DedicatedMachineHub(new DedicatedMachineService(), 50050);
+var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var hub = new DedicatedMachineHub(loggerFactory, new DedicatedMachineService(), 50050);
+hub.Start();
 hub.Start();
 
 Console.WriteLine("Sleeping");

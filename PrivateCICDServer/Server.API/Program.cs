@@ -26,7 +26,7 @@ public class Program
     {
         var scope = host.Services.CreateScope();
         var service = scope.ServiceProvider.GetRequiredService<IDedicatedMachineService>();
-        var hub = new DedicatedMachineHub(service, 50050);
+        var hub = new DedicatedMachineHub(LoggerFactory.Create(builder => builder.AddConsole()), service, 50050);
         hub.Start();
     }
 
