@@ -33,10 +33,8 @@ public static class StreamExtension
 
     private static void WriteInt(this Stream stream, int value)
     {
-        stream.WriteByte((byte)(value >> 24));
-        stream.WriteByte((byte)(value >> 16));
-        stream.WriteByte((byte)(value >> 8));
-        stream.WriteByte((byte)value);
+        var bytes = new[] { (byte)(value >> 24), (byte)(value >> 16), (byte)(value >> 8), (byte)value };
+        stream.Write(bytes, 0, 4);
     }
 
     private static string ReadString(this Stream stream)
