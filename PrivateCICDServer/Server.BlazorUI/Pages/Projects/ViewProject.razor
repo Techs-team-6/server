@@ -1,16 +1,21 @@
 ﻿@page "/Projects/{projectName}/"
+@using Server.BlazorUI.Components
 @using Server.API.Client
 @using Server.API.Client.Contracts
 @inject ProjectClient ProjectClient
 @inject NavigationManager NavigationManager
 
 @{
-    var response = ProjectClient.GetAsync(ProjectName).Result;
-    if (response.StatusCode != 200)
-        throw new Exception($"status code {response.StatusCode}");
-        
-    var project = response.Project;
-    
+    Project project;
+    try
+    {
+        project = ProjectClient.GetAsync(ProjectName).Result;
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+        throw;
+    }
     <OurForm>
         <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
         <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>
@@ -83,5 +88,4 @@
         ProjectClient.DeleteAsync(project.Id).Wait();
         NavigationManager.NavigateTo("/Projects/");
     }
-
 }

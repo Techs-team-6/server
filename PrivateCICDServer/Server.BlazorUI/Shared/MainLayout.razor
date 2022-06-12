@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using Components
+@implements IErrorComponent
+@inherits LayoutComponentBase
+
 
 <PageTitle>Server.BlazorUI</PageTitle>
 
@@ -6,14 +9,51 @@
     <div class="sidebar">
         <NavMenu />
     </div>
-
     <main>
         <div class="top-row px-4">
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
+        <div class="content px-4">
+                @if (isErrorActive)
+                {
+                    <Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="isErrorActive" Animation="@DialogAnimation.SlideDown">
+                        <DialogHeader>
+                             <h3>@title</h3>
+                        </DialogHeader>
+                        <DialogBody>
+                            <p>@message</p>
+                        </DialogBody>
+                        <DialogFooter>
+                            <button type="button" class="btn btn-primary" @onclick="@HideError">Ok</button>
+                        </DialogFooter>
+                    </Dialog>
+                }
 
-        <article class="content px-4">
-            @Body
-        </article>
+
+                <CascadingValue Value="this" Name="ErrorComponent">
+                @Body
+            </CascadingValue>
+        
+            </div>
     </main>
 </div>
+
+@code {
+
+    bool isErrorActive;
+    string title;
+    string message;
+
+    public void ShowError(string title, string message)
+    {
+        this.isErrorActive = true;
+        this.title = title;
+        this.message = message;
+        StateHasChanged();
+    }
+
+    private void HideError()
+    {
+        isErrorActive = false;
+    }
+}

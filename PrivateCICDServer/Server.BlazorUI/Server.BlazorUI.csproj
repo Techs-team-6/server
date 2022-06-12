@@ -15,4 +15,14 @@
     <PackageReference Include="BlazorDialog" Version="1.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="Components\OurForm.razor" />
+    <AdditionalFiles Include="Components\OurInput.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Pages\Projects\Components\OurForm.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Projects\Components\OurInput.razor" />
+  </ItemGroup>
+
 </Project>
