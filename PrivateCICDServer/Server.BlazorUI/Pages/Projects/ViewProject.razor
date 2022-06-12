@@ -10,18 +10,18 @@
     try
     {
         project = ProjectClient.GetAsync(ProjectName).Result;
-        <OurForm>
-            <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
-            <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>
-            <OurInput IsReadonly="true" Label="Repository" Value="@project.Repository"/>
-            <OurInput IsReadonly="true" Label="BuildScript" Value="@project.BuildScript"/>
-        </OurForm>
     }
     catch (Exception e)
     {
         Console.WriteLine(e.Message);
         throw;
     }
+    <OurForm>
+        <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
+        <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>
+        <OurInput IsReadonly="true" Label="Repository" Value="@project.Repository"/>
+        <OurInput IsReadonly="true" Label="BuildScript" Value="@project.BuildScript"/>
+    </OurForm>
 }
 <h4>Builds</h4>
 @foreach (var build in project.Builds)
@@ -88,5 +88,4 @@
         ProjectClient.DeleteAsync(project.Id).Wait();
         NavigationManager.NavigateTo("/Projects/");
     }
-
 }
