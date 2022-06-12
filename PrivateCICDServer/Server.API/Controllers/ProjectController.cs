@@ -40,13 +40,11 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Create(string name, string buildScript)
+    public ActionResult<Project> Create(string name, string buildScript)
     {
         try
         {
-            _service.CreateProject(name, buildScript);
-
-            return Ok();
+            return _service.CreateProject(name, buildScript);
         }
         catch (SerializationException e)
         {
