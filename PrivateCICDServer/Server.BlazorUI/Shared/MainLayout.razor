@@ -51,6 +51,11 @@
         this.message = message;
         StateHasChanged();
     }
+    
+    public void ShowError(string message)
+    {
+        ShowError("An error has occured", message);
+    }
 
     private void HideError()
     {

@@ -10,6 +10,8 @@ builder.Services.AddScoped(services  => new TokenClient(services.GetService<ICon
 builder.Services.AddScoped(services  => new ProjectClient(services.GetService<IConfiguration>()!["serverApiUrl"], new HttpClient()));
 builder.Services.AddScoped(services  => new DmClient(services.GetService<IConfiguration>()!["serverApiUrl"], new HttpClient()));
 builder.Services.AddScoped(services  => new MasterClient(services.GetService<IConfiguration>()!["serverApiUrl"], new HttpClient()));
+builder.Services.AddScoped(services =>
+    new InstanceClient(services.GetService<IConfiguration>()!["serverApiUrl"], new HttpClient()));
 builder.Services.AddBlazorContextMenu();
 
 var app = builder.Build();
