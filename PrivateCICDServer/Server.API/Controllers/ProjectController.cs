@@ -33,9 +33,9 @@ public class ProjectController : ControllerBase
             var project = _service.GetProject(name);
             return project;
         }
-        catch (ServiceException)
+        catch (ServiceException e)
         {
-            return NotFound();
+            return NotFound(e.Message);
         }
     }
 
