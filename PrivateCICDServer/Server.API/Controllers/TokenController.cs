@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
+using Server.Core.Tools;
 
 namespace Server.API.Controllers;
 
@@ -22,20 +23,42 @@ public class TokenController : ControllerBase
     }
 
     [HttpPost]
-    public string Generate(string description)
+    public ActionResult<string> Generate(string description)
     {
-        return _tokenService.Generate(description);
+        try
+        {
+            return _tokenService.Generate(description);
+        }
+        catch (ArgumentNullException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
     
     [HttpPost]
     public void Edit(Guid id, string description)
     {
-        _tokenService.Edit(id, description);
+        try
+        {
+            _tokenService.Edit(id, description);
+        }
+        catch (ServiceException e)
+        {
+            NotFound(e.Message);
+        }
     }
 
     [HttpPost]
-    public void Refuse(Guid id)
+    public ActionResult Refuse(Guid id)
     {
-        _tokenService.Refuse(id);
+        try
+        {
+            _tokenService.Refuse(id);
+            return Ok();
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }
