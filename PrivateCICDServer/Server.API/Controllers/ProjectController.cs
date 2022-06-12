@@ -1,10 +1,8 @@
 ﻿using System.Runtime.Serialization;
-using Domain.Dto.Responses;
 using Domain.Entities;
 using Domain.Services;
+using Domain.Tools;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Server.Core.Tools;
 
 namespace Server.API.Controllers;
 

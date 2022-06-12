@@ -1,7 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Services;
+using Domain.Tools;
 using Microsoft.AspNetCore.Mvc;
-using Server.Core.Tools;
 
 namespace Server.API.Controllers;
 

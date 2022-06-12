@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-
-namespace Domain.Entities;
+﻿namespace Domain.Entities;
 
 public class Build
 {
