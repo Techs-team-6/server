@@ -80,12 +80,12 @@ public static class StreamExtension
 
     private static readonly ImmutableList<Type> ActionTypes = AppDomain.CurrentDomain.GetAssemblies()
         .SelectMany(a => a.GetTypes())
-        .Where(IdDedicateMachineDto).ToImmutableList();
+        .Where(IsDedicateMachineDto).ToImmutableList();
 
     private static readonly ImmutableDictionary<string, Type> ActionTypeByName =
         ActionTypes.ToImmutableDictionary(type => type.Name);
 
-    private static bool IdDedicateMachineDto(Type? t)
+    private static bool IsDedicateMachineDto(Type? t)
     {
         return t is not null
                && typeof(IDedicateMachineDto).IsAssignableFrom(t)
