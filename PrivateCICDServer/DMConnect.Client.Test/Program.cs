@@ -8,8 +8,8 @@ var endPoint = new IPEndPoint(IPAddress.Loopback, 50050);
 var token = args[0];
 var client = new DedicatedMachineHubClient(endPoint, new RegisterDto(
     token,
-    "Lighty",
-    "Desciption is cool, but no"));
+    "Lightly",
+    "Description is cool, but no"));
 
 var machineAgent = new MachineAgent();
 client.SetMachineAgent(machineAgent);
