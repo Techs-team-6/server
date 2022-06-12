@@ -12,11 +12,11 @@
 
 @code
 {
-    private Project _project;
+    private Project _project = null!;
     private bool _isShown;
     
     [Parameter]
-    public Action<Project> OnDelete { get; set; }
+    public Action<Project> OnDelete { get; set; } = null!;
 
     public void Show(Project project)
     {

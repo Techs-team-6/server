@@ -1,5 +1,4 @@
-﻿@using Server.BlazorUI.Components
-@using Microsoft.AspNetCore.Components
+﻿@using Microsoft.AspNetCore.Components
 @using Server.API.Client.Contracts
 @using System.Globalization
 <Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
@@ -8,9 +7,9 @@
     </DialogHeader>
     <DialogBody>
         <OurForm>
-            <OurInput Label="Start string" @bind-Value="_startString"/>
-            <OurInput Label="Build id" @bind-Value="_buildId"/>
-            <OurInput Label="Build id" @bind-Value="_machineId"/>
+            <OurInput Label="Start string" @bind-Value="StartString"/>
+            <OurInput Label="Build id" @bind-Value="BuildId"/>
+            <OurInput Label="Machine id" @bind-Value="MachineId"/>
         </OurForm>
     </DialogBody>
     <DialogFooter>
@@ -21,27 +20,28 @@
 
 @code
 {
-    private string _startString { get; set; }
-    private string _buildId { get; set; }
-    private Guid _projectId { get; set; }
-    private string _machineId { get; set; }
-    private bool _isShown;
-    
-    [Parameter]
-    public Action<Guid, string, Guid, Guid> OnInstanceCreate { get; set; }
+    private string StartString { get; set; } = "";
+
+    private string BuildId { get; set; } = null!;
+    private Guid ProjectId { get; set; }
+
+    private string MachineId { get; set; } = "";
+    private bool _isShown = false;
+
+    [Parameter] public Action<Guid, string, Guid, Guid> OnInstanceCreate { get; set; } = null!;
 
     public void Show(Guid projectId)
     {
         _isShown = true;
-        _projectId = projectId;
+        ProjectId = projectId;
     }
 
     private void Approve()
     {
         _isShown = false;
-        var buildId = Guid.Parse(_buildId);
-        var machineId = Guid.Parse(_machineId);
-        OnInstanceCreate.Invoke(_projectId, _startString, buildId, machineId);
+        var buildId = Guid.Parse(BuildId);
+        var machineId = Guid.Parse(MachineId);
+        OnInstanceCreate.Invoke(ProjectId, StartString, buildId, machineId);
     }
     
     private void Cancel()

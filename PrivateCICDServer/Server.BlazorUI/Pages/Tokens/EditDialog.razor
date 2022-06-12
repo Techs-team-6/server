@@ -1,5 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Components
-@using Server.BlazorUI.Components
 @using Server.API.Client.Contracts
 @using System.Globalization
 <Dialog Size="@DialogSize.Large" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
@@ -22,11 +21,11 @@
 
 @code
 {
-    private Token _token;
+    private Token _token = null!;
     private bool _isShown;
     
     [Parameter]
-    public Action<Token> OnEdit { get; set; }
+    public Action<Token> OnEdit { get; set; } = null!;
 
     public void Show(Token token)
     {

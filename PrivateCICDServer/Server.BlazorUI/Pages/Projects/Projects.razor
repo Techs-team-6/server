@@ -31,9 +31,9 @@
 
 @code
 {
-    CreateDialog _createDialog;
+    CreateDialog _createDialog = null!;
     [CascadingParameter(Name = "ErrorComponent")]
-    protected IErrorComponent ErrorComponent { get; set; }
+    protected IErrorComponent ErrorComponent { get; set; } = null!;
 
     private void OnCreate(string name)
     {
