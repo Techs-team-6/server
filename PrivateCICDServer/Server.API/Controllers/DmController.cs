@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
+using Server.Core.Tools;
 
 namespace Server.API.Controllers;
 
@@ -23,9 +24,16 @@ public class DmController : ControllerBase
     }
     
     [HttpPost]
-    public DedicatedMachine RegisterMachine(string token, string label, string description)
+    public ActionResult<DedicatedMachine> RegisterMachine(string token, string label, string description)
     {
-        var dto = new RegisterDto(token, label, description);
-        return _service.RegisterMachine(dto);
+        try
+        {
+            var dto = new RegisterDto(token, label, description);
+            return _service.RegisterMachine(dto);
+        }
+        catch (ServiceException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }
