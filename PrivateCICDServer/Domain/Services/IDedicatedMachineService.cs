@@ -7,7 +7,7 @@ public interface IDedicatedMachineService
 {
     DedicatedMachine RegisterMachine(RegisterDto dto);
     
-    bool AuthMachine(AuthDto dto);
+    void AuthMachine(AuthDto dto);
 
     void SetState(SetStateDto dto);
     

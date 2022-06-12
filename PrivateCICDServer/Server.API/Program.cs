@@ -1,5 +1,3 @@
-using DMConnect.Server;
-using Domain.Services;
 using Server.Core;
 
 namespace Server.API;
@@ -12,21 +10,8 @@ public class Program
         var host = CreateHostBuilder(args).Build();
 
         CreateDbIfNotExists(host);
-        
-        // When we launch API, we do not use arguments, hub works
-        // During the NSwag code gen because of DedicatedMachineHub build got stacked
-        // #TechnicalDebt
-        if (args.Length == 0)
-            StartDmHub(host);
 
         host.Run();
-    }
-    
-    private static void StartDmHub(IHost host)
-    {
-        var scope = host.Services.CreateScope();
-        var service = scope.ServiceProvider.GetRequiredService<IDedicatedMachineService>();
-        var hub = new DedicatedMachineHub(service, 50050);
     }
 
     private static void CreateDbIfNotExists(IHost host)

@@ -2,8 +2,12 @@
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
+using Microsoft.Extensions.Logging;
 
-var hub = new DedicatedMachineHub(new DedicatedMachineService(), 50050);
+var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+var hub = new DedicatedMachineHub(loggerFactory, new DedicatedMachineService(), 50050);
+hub.Start();
+hub.Start();
 
 Console.WriteLine("Sleeping");
 Thread.Sleep(1000_000);
@@ -15,9 +19,8 @@ internal class DedicatedMachineService : IDedicatedMachineService
         return new DedicatedMachine { Id = Guid.NewGuid() };
     }
 
-    public bool AuthMachine(AuthDto dto)
+    public void AuthMachine(AuthDto dto)
     {
-        return true;
     }
 
     public void SetState(SetStateDto dto)
@@ -27,6 +30,6 @@ internal class DedicatedMachineService : IDedicatedMachineService
 
     public List<DedicatedMachine> List()
     {
-        return null;
+        return new List<DedicatedMachine>();
     }
 }
