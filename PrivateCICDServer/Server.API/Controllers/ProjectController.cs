@@ -1,8 +1,10 @@
-﻿using Domain.Dto.Responses;
+﻿using System.Runtime.Serialization;
+using Domain.Dto.Responses;
 using Domain.Entities;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Server.Core.Tools;
 
 namespace Server.API.Controllers;
 
@@ -22,82 +24,79 @@ public class ProjectController : ControllerBase
     {
         return _service.GetProjects();
     }
-    
+
     [HttpGet]
-    public ProjectResponse Get(string name)
+    public ActionResult<Project> Get(string name)
     {
-        // TODO Show ServiceException messages as a popup for user
         try
         {
             var project = _service.GetProject(name);
-            var response = new ProjectResponse
-            {
-                StatusCode = 200,   // todo get rid of magic values
-                Description = "OK",
-                Project = project,
-            };
-
-            return response;
+            return project;
         }
-        catch (Exception e)
+        catch (ServiceException e)
         {
-            Console.WriteLine(e);
-            var response = new ProjectResponse
-            {
-                StatusCode = 228,   // todo get rid of magic values
-                Description = "Error",
-                Project = null,
-            };
-
-            return response;
+            return NotFound(e.Message);
         }
     }
 
     [HttpPost]
-    public ProjectResponse Create(string name, string buildScript)
+    public ActionResult Create(string name, string buildScript)
     {
         try
         {
-            var project = _service.CreateProject(name, buildScript);
-            
-            var response = new ProjectResponse
-            {
-                StatusCode = 200,   // todo get rid of magic values
-                Description = "OK",
-                Project = project,
-            };
+            _service.CreateProject(name, buildScript);
 
-            return response;
+            return Ok();
         }
-        catch (Exception e)
+        catch (SerializationException e)
         {
-            Console.WriteLine(e);
-            var response = new ProjectResponse
-            {
-                StatusCode = 228,   // todo get rid of magic values
-                Description = "Error",
-                Project = null,
-            };
-
-            return response;
+            return BadRequest(e.Message);
         }
+        catch (ServiceException e)
+        {
+            return BadRequest(e.Message);
+        }
+        
     }
     
     [HttpPost]
-    public void Edit(Guid id, string name, string repository, string buildScript)
+    public ActionResult Edit(Guid id, string name, string repository, string buildScript)
     {
-        _service.EditProject(id, name, repository, buildScript);
+        try
+        {
+            _service.EditProject(id, name, repository, buildScript);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpPost]
-    public void Delete(Guid id)
+    public ActionResult Delete(Guid id)
     {
-        _service.DeleteProject(id);
+        try
+        {
+            _service.DeleteProject(id);
+            return Ok();
+        }
+        catch (ServiceException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     [HttpPost]
-    public Build AddBuild(Guid projectId, string buildName, Guid storageId)
+    public ActionResult<Build> AddBuild(Guid projectId, string buildName, Guid storageId)
     {
-        return _service.AddBuild(projectId, buildName, storageId);
+        try
+        {
+            return _service.AddBuild(projectId, buildName, storageId);
+        }
+        catch (ServiceException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 }
