@@ -1,22 +1,27 @@
 ﻿@page "/Projects/{projectName}/"
+@using Server.BlazorUI.Components
 @using Server.API.Client
 @using Server.API.Client.Contracts
 @inject ProjectClient ProjectClient
 @inject NavigationManager NavigationManager
 
 @{
-    var response = ProjectClient.GetAsync(ProjectName).Result;
-    if (response.StatusCode != 200)
-        throw new Exception($"status code {response.StatusCode}");
-        
-    var project = response.Project;
-    
-    <OurForm>
-        <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
-        <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>
-        <OurInput IsReadonly="true" Label="Repository" Value="@project.Repository"/>
-        <OurInput IsReadonly="true" Label="BuildScript" Value="@project.BuildScript"/>
-    </OurForm>
+    Project project;
+    try
+    {
+        project = ProjectClient.GetAsync(ProjectName).Result;
+        <OurForm>
+            <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
+            <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>
+            <OurInput IsReadonly="true" Label="Repository" Value="@project.Repository"/>
+            <OurInput IsReadonly="true" Label="BuildScript" Value="@project.BuildScript"/>
+        </OurForm>
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+        throw;
+    }
 }
 <h4>Builds</h4>
 @foreach (var build in project.Builds)
