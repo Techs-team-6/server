@@ -1,8 +1,7 @@
-﻿using DMConnect.Server;
-using Domain.Services;
-using Domain.States;
+﻿using Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using ProjectServiceApiClient;
+using Server.API.Services;
 using Server.Core;
 using Server.Core.Services;
 
@@ -26,13 +25,16 @@ public class Startup
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IBuildingService, DummyBuildingService>();
         services.AddScoped<IMasterService, MasterService>();
-        services.AddScoped(serviceProvider => new ProjectServiceClient(
-            serviceProvider.GetService<IConfiguration>()!["ProjectBuildingServiceUrl"]!, new HttpClient()));
+        services.AddScoped(_ =>
+            new ProjectServiceClient(Configuration["ProjectBuildingServiceUrl"]!, new HttpClient()));
 
         services.AddScoped<IDedicatedMachineService, DedicatedMachineService>();
         services.AddScoped<IInstanceService, InstanceService>();
-        // services.AddScoped(serviceProvider => new DedicatedMachineHub(
-        //     serviceProvider.GetRequiredService<IDedicatedMachineService>(), 50050));
+
+        services.AddHostedService(serviceProvider => new HostedHubService(
+            serviceProvider.GetRequiredService<IServiceScopeFactory>(),
+            serviceProvider.GetRequiredService<ILoggerFactory>(),
+            int.Parse(Configuration["DMConnectHubPort"]!)));
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();

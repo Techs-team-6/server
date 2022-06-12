@@ -4,7 +4,7 @@ using Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using ProjectServiceApiClient;
 using ProjectServiceApiClient.Models;
-using Server.Core.Tools;
+using Domain.Tools;
 
 namespace Server.Core.Services;
 

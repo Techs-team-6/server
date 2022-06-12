@@ -1,29 +1,87 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using Domain.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DMConnect.Server;
 
 public class DedicatedMachineHub
 {
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<DedicatedMachineHub> _logger;
     private readonly IDedicatedMachineService _machineService;
+    private readonly int _port;
+    private readonly Thread _thread;
+    private readonly List<MachineAgentClient> _clients = new();
 
-    public DedicatedMachineHub(IDedicatedMachineService service, int port)
+    private readonly CancellationTokenSource _cancellationTokenSource;
+
+    public DedicatedMachineHub(ILoggerFactory loggerFactory, IDedicatedMachineService service, int port)
     {
+        _loggerFactory = loggerFactory;
         _machineService = service;
-        new Thread(() => Start(port)).Start();
+        _port = port;
+        _logger = _loggerFactory.CreateLogger<DedicatedMachineHub>();
+        _thread = new Thread(ListenLoop);
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 
-    private void Start(int port)
+    public void Start()
     {
-        var tcpListener = new TcpListener(IPAddress.Loopback, port);
-        tcpListener.Start();
-        Console.WriteLine($"{GetType().Name} began listening port {port}");
-        while (true)
+        _thread.Start();
+    }
+
+    public void Stop()
+    {
+        _cancellationTokenSource.Cancel();
+        if (_thread.ThreadState != ThreadState.Unstarted)
+            _thread.Join();
+        lock (_clients)
         {
-            var client = tcpListener.AcceptTcpClient();
-            var machineAgent = new RemoteDedicatedMachineAgent(_machineService, client);
-            machineAgent.Start();
+            while (_clients.Count != 0)
+                Monitor.Wait(_clients);
+        }
+    }
+
+    private async void ListenLoop()
+    {
+        var tcpListener = new TcpListener(IPAddress.Loopback, _port);
+        tcpListener.Start();
+        _logger.LogInformation("Started to listen to port {Port}", _port);
+
+        try
+        {
+            while (true)
+            {
+                var client = await tcpListener.AcceptTcpClientAsync(_cancellationTokenSource.Token);
+                _logger.LogInformation("Accepted tcp client");
+
+                var machineAgent = new MachineAgentClient(_loggerFactory.CreateLogger<MachineAgentClient>(),
+                    _machineService,
+                    client,
+                    OnMachineAgentLeave,
+                    _cancellationTokenSource.Token);
+                _clients.Add(machineAgent);
+                machineAgent.Start();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Caught cancel operation");
+        }
+        finally
+        {
+            tcpListener.Stop();
+            _logger.LogInformation("Stopped");
+        }
+    }
+
+    private void OnMachineAgentLeave(MachineAgentClient client)
+    {
+        lock (_clients)
+        {
+            _clients.Remove(client);
+            Monitor.Pulse(_clients);
         }
     }
 }
