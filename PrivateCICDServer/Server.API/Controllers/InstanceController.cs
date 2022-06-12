@@ -65,16 +65,28 @@ public class InstanceController : ControllerBase
     }
 
     [HttpGet]
-    public IReadOnlyCollection<InstanceState> ListAllStates(Guid projectId, Guid instanceId)
+    public ActionResult<IReadOnlyCollection<InstanceState>> ListAllStates(Guid projectId, Guid instanceId)
     {
-        // todo rewrite to ActionResult
-        return _service.ListAllStates(projectId, instanceId);
+        try
+        {
+            return _service.ListAllStates(projectId, instanceId).ToList();
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
     
     [HttpGet]
-    public IReadOnlyCollection<InstanceState> ListLastStates(Guid projectId, Guid instanceId, int count)
+    public ActionResult<IReadOnlyCollection<InstanceState>> ListLastStates(Guid projectId, Guid instanceId, int count)
     {
-        // todo rewrite to ActionResult
-        return _service.ListLastStates(projectId, instanceId, count);
+        try
+        {
+            return _service.ListLastStates(projectId, instanceId, count).ToList();
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }
