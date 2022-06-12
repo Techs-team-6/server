@@ -34,10 +34,12 @@ public class DedicatedMachineHub
     public void Stop()
     {
         _cancellationTokenSource.Cancel();
-        _thread.Join();
-        foreach (var client in _clients)
+        if (_thread.ThreadState != ThreadState.Unstarted)
+            _thread.Join();
+        lock (_clients)
         {
-            client.Join();
+            while (_clients.Count != 0)
+                Monitor.Wait(_clients);
         }
     }
 
@@ -76,6 +78,10 @@ public class DedicatedMachineHub
 
     private void OnMachineAgentLeave(MachineAgentClient client)
     {
-        _clients.Remove(client);
+        lock (_clients)
+        {
+            _clients.Remove(client);
+            Monitor.Pulse(_clients);
+        }
     }
 }

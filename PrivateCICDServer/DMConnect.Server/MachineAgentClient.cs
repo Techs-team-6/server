@@ -36,12 +36,6 @@ public class MachineAgentClient : IDedicatedMachineAgent
         _thread.Start();
     }
 
-    public void Join()
-    {
-        if (_thread.ThreadState != ThreadState.Unstarted)
-            _thread.Join();
-    }
-
     private void Serve()
     {
         try

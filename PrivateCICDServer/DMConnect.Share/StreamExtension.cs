@@ -78,16 +78,18 @@ public static class StreamExtension
         return bytes;
     }
 
-    private static readonly List<Type> ActionTypes = new()
-    {
-        typeof(AuthDto),
-        typeof(RegisterDto),
-        typeof(AuthResultDto),
-        typeof(StartInstanceDto),
-        typeof(InstanceStdOutDto),
-        typeof(InstanceStdErrDto),
-    };
+    private static readonly ImmutableList<Type> ActionTypes = AppDomain.CurrentDomain.GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(IdDedicateMachineDto).ToImmutableList();
 
     private static readonly ImmutableDictionary<string, Type> ActionTypeByName =
         ActionTypes.ToImmutableDictionary(type => type.Name);
+
+    private static bool IdDedicateMachineDto(Type? t)
+    {
+        return t is not null
+               && typeof(IDedicateMachineDto).IsAssignableFrom(t)
+               && !t.IsAbstract
+               && !t.IsInterface;
+    }
 }
