@@ -1,5 +1,4 @@
-﻿@using Server.BlazorUI.Components
-@using Microsoft.AspNetCore.Components
+﻿@using Microsoft.AspNetCore.Components
 @using Server.API.Client.Contracts
 @using System.Globalization
 <Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
@@ -8,7 +7,7 @@
     </DialogHeader>
     <DialogBody>
         <OurForm>
-            <OurInput Label="Name" @bind-Value="_name"/>
+            <OurInput Label="Name" @bind-Value="Name"/>
         </OurForm>
     </DialogBody>
     <DialogFooter>
@@ -19,11 +18,11 @@
 
 @code
 {
-    private string _name { get; set; }
-    private bool _isShown;
+    private string Name { get; set; } = "";
+    private bool _isShown = false;
     
     [Parameter]
-    public Action<string> OnCreate { get; set; }
+    public Action<string> OnCreate { get; set; } = null!;
 
     public void Show()
     {
@@ -33,8 +32,8 @@
     private void Approve()
     {
         _isShown = false;
-        OnCreate.Invoke(_name);
-        _name = null;
+        OnCreate.Invoke(Name);
+        Name = "";
     }
     
     private void Cancel()

@@ -39,16 +39,12 @@
 <CreateDialog @ref="_createDialog" OnCreate="CreateToken"/>
 
 @code {
-    private DeleteDialog _deleteDialog;
-    private EditDialog _editDialog;
-    private CreateDialog _createDialog;
-    
-    private bool _isDialogShown;
-    private bool _isDeleteDialogShown;
+    private DeleteDialog _deleteDialog = null!;
+    private EditDialog _editDialog = null!;
+    private CreateDialog _createDialog = null!;
 
     private void OnTokenRowMenu(ItemClickEventArgs e)
     {
-        // (args => {_editDialog.Show(args.GetTarget<Token>());})
         var token = e.GetTarget<Token>();
 
         switch (e.MenuItem.Id)

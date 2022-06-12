@@ -20,11 +20,11 @@
 
 @code
 {
-    private Token _token;
+    private Token _token = null!;
     private bool _isShown;
     
     [Parameter]
-    public Action<Token> OnDelete { get; set; }
+    public Action<Token> OnDelete { get; set; } = null!;
 
     public void Show(Token token)
     {

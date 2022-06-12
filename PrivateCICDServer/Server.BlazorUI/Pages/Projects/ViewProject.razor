@@ -1,5 +1,4 @@
 ﻿@page "/Projects/{projectName}/"
-@using Server.BlazorUI.Components
 @using Server.API.Client
 @using Server.API.Client.Contracts
 @inject ProjectClient ProjectClient
@@ -95,17 +94,16 @@
 }
 
 @code {
-    DeleteDialog _deleteDialog;
-    CreateBuildDialog _buildCreateDialog;
-    CreateInstanceDialog _instanceCreateDialog;
+    DeleteDialog _deleteDialog = null!;
+    CreateBuildDialog _buildCreateDialog = null!;
+    CreateInstanceDialog _instanceCreateDialog = null!;
     bool _showBuildList = false;
     bool _showInstanceList = false;
     
     [CascadingParameter(Name = "ErrorComponent")]
-    protected IErrorComponent ErrorComponent { get; set; }
+    protected IErrorComponent ErrorComponent { get; set; } = null!;
 
-    [Parameter]
-    public string ProjectName { get; set; }
+    [Parameter] public string ProjectName { get; set; } = "";
 
     private void OnDelete(Project project)
     {
