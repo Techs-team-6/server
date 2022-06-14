@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Server.Core;
 
-public class ServerDbContext : DbContext
+public sealed class ServerDbContext : DbContext
 {
     public ServerDbContext(DbContextOptions options)
         : base(options)
@@ -11,6 +11,7 @@ public class ServerDbContext : DbContext
         Database.EnsureCreated();
     }
 
+    // ReSharper disable once UnusedMember.Local
     private DbSet<Build> Builds { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
     public DbSet<Token> Tokens { get; set; } = null!;
