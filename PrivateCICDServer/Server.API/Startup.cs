@@ -1,5 +1,4 @@
 ﻿using Domain.Services;
-using Microsoft.EntityFrameworkCore;
 using ProjectServiceApiClient;
 using Server.API.Services;
 using Server.Core;
@@ -9,32 +8,41 @@ namespace Server.API;
 
 public class Startup
 {
-    private IConfiguration Configuration { get; }
-
-    public Startup(IConfiguration configuration)
+    public static void Main(string[] args)
     {
-        Configuration = configuration;
+        Environment.SetEnvironmentVariable("WITHOUT_PS", "true");
+
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
+            .Build()
+            .Run();
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<Settings>();
+
         services.AddDbContext<ServerDbContext>(
-            options => options.UseSqlite(Configuration.GetConnectionString("Sqlite")!));
+            (provider, options) =>
+            {
+                var settings = provider.GetRequiredService<Settings>();
+                settings.UseDbAction(options);
+            });
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IBuildingService, DummyBuildingService>();
         services.AddScoped<IMasterService, MasterService>();
-        services.AddScoped(_ =>
-            new ProjectServiceClient(Configuration["ProjectBuildingServiceUrl"]!, new HttpClient()));
+        services.AddScoped(provider =>
+        {
+            var settings = provider.GetRequiredService<Settings>();
+            return new ProjectServiceClient(settings.ProjectBuildingServiceUrl, new HttpClient());
+        });
 
         services.AddScoped<IDedicatedMachineService, DedicatedMachineService>();
         services.AddScoped<IInstanceService, InstanceService>();
 
-        services.AddHostedService(serviceProvider => new HostedHubService(
-            serviceProvider.GetRequiredService<IServiceScopeFactory>(),
-            serviceProvider.GetRequiredService<ILoggerFactory>(),
-            int.Parse(Configuration["DMConnectHubPort"]!)));
+        services.AddHostedService<HostedHubService>();
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
@@ -53,8 +61,6 @@ public class Startup
 
         app.UseRouting();
         app.UseAuthorization();
-        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-        // app.UseOpenApi();
-        // app.UseSwaggerUi3();
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
     }
 }
