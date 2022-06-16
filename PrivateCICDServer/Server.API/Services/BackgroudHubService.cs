@@ -12,11 +12,11 @@ public class HostedHubService : IHostedService
     private IServiceScope _scope = null!;
     private DedicatedMachineHub _hub = null!;
 
-    public HostedHubService(IServiceScopeFactory scopeFactory, ILoggerFactory loggerFactory, int port)
+    public HostedHubService(IServiceScopeFactory scopeFactory, ILoggerFactory loggerFactory, Settings settings)
     {
         _scopeFactory = scopeFactory;
         _loggerFactory = loggerFactory;
-        _port = port;
+        _port = settings.DmConnectHubPort;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

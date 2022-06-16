@@ -7,7 +7,7 @@ public class DbJokes
 {
     public static void Test()
     {
-        using (var db = new TestDb())
+        using (var db = TestDb())
         {
             db.Database.EnsureDeleted();
             db.Database.EnsureCreated();
@@ -20,7 +20,7 @@ public class DbJokes
             db.SaveChanges();
         }
 
-        using (var db = new TestDb())
+        using (var db = TestDb())
         {
             var project = db.Projects.First();
             project.Builds.Add(new Build
@@ -33,13 +33,13 @@ public class DbJokes
             db.SaveChanges();
         }
 
-        using (var db = new TestDb())
+        using (var db = TestDb())
         {
             var tokenId = Guid.NewGuid();
             db.Tokens.Add(new Token
             {
                 Id = tokenId,
-                Description = "descr token",
+                Description = "description token",
                 CreationTime = DateTime.Now,
                 TokenStr = "asd"
             });
@@ -54,7 +54,7 @@ public class DbJokes
             db.SaveChanges();
         }
 
-        using (var db = new TestDb())
+        using (var db = TestDb())
         {
             var project = db.Projects.Include(p => p.Builds).First();
             var build = project.Builds.First();
@@ -75,11 +75,10 @@ public class DbJokes
         }
     }
 
-    private class TestDb : ServerDbContext
+    private static ServerDbContext TestDb()
     {
-        public TestDb() : base(new DbContextOptionsBuilder<ServerDbContext>().UseSqlite(@"Filename=../../../Test.db")
-            .Options)
-        {
-        }
+        var optionsBuilder = new DbContextOptionsBuilder<ServerDbContext>();
+        optionsBuilder.UseSqlite(@"Filename=../../../Test.db");
+        return new ServerDbContext(optionsBuilder.Options);
     }
 }

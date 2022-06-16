@@ -8,7 +8,8 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-preview.4.22229.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5" />
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.1" />
         <PackageReference Include="NSwag.MSBuild" Version="13.16.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -29,10 +30,6 @@
     <ItemGroup>
         <ProjectReference Include="..\DMConnect.Server\DMConnect.Server.csproj" />
         <ProjectReference Include="..\Server.Core\Server.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Remove="studio_nswag.json" />
     </ItemGroup>
 
 </Project>
