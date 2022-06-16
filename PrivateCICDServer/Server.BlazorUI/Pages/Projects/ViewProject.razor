@@ -1,6 +1,7 @@
 ﻿@page "/Projects/{projectName}/"
 @using Server.API.Client
 @using Server.API.Client.Contracts
+@using Server.BlazorUI.Tools
 @inject ProjectClient ProjectClient
 @inject InstanceClient InstanceClient
 @inject NavigationManager NavigationManager
@@ -114,7 +115,7 @@
         }
         catch (Exception e)
         {
-            ErrorComponent.ShowError(e.Message);
+            ErrorComponent.ShowError(ErrorParser.GetErrorMessage(e.Message));
         }
     }
 
@@ -127,7 +128,7 @@
         }
         catch (Exception e)
         {
-            ErrorComponent.ShowError(e.Message);
+            ErrorComponent.ShowError(ErrorParser.GetErrorMessage(e.Message));
         }
        
     }
@@ -141,7 +142,7 @@
         }
         catch (Exception e)
         {
-            ErrorComponent.ShowError(e.Message);
+            ErrorComponent.ShowError(ErrorParser.GetErrorMessage(e.Message));
         }
         
     }
