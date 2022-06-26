@@ -1,10 +1,10 @@
 ﻿using System.Runtime.Serialization;
 using Domain.Entities;
 using Domain.Services;
+using Domain.Tools;
 using Microsoft.EntityFrameworkCore;
 using ProjectServiceApiClient;
 using ProjectServiceApiClient.Models;
-using Domain.Tools;
 
 namespace Server.Core.Services;
 
@@ -23,7 +23,7 @@ public class ProjectService : IProjectService
     public Project CreateProject(string name, string buildScript)
     {
         if (_context.Projects.Any(p => p.Name.Equals(name)))
-            throw new SerializationException($"There is another project with name: '{name}'");
+            throw new ServiceException($"There is another project with name: '{name}'");
 
         if (!_nameValidatorService.IsValidProjectName(name))
             throw new ServiceException($"Name '{name}' does not fit the pattern");
@@ -44,7 +44,7 @@ public class ProjectService : IProjectService
         return project;
     }
 
-    public IReadOnlyList<Project> GetProjects()
+    public IEnumerable<Project> GetProjects()
     {
         return _context.Projects.Include(p => p.Builds)
             .Include(p => p.Instances)
@@ -65,11 +65,7 @@ public class ProjectService : IProjectService
 
     public Project GetProject(string name)
     {
-        return _context.Projects
-                   .Include(p => p.Instances)
-                   .ThenInclude(p => p.InstanceConfig)
-                   .ThenInclude(p => p.DedicatedMachine)
-                   .Include(p => p.Builds).FirstOrDefault(p => p.Name.Equals(name))
+        return GetProjects().FirstOrDefault(p => p.Name.Equals(name))
                ?? throw new ServiceException($"Project with name '{name}' does not exist.");
     }
 
@@ -88,23 +84,14 @@ public class ProjectService : IProjectService
 
     public void DeleteProject(Guid id)
     {
-        var projectToDelete = _context.Projects
-                                  .Include(p => p.Instances)
-                                  .ThenInclude(p => p.InstanceConfig)
-                                  .ThenInclude(p => p.DedicatedMachine)
-                                  .Include(p => p.Builds).FirstOrDefault(p => p.Id.Equals(id))
-                              ?? throw new ServiceException($"Project with id '{id}' does not exist.");
+        var projectToDelete = GetProject(id);
         _context.Projects.Remove(projectToDelete);
         _context.SaveChanges();
     }
 
     public IReadOnlyList<Project> FindProjects(string substring)
     {
-        return _context.Projects
-            .Include(p => p.Instances)
-            .ThenInclude(p => p.InstanceConfig)
-            .ThenInclude(p => p.DedicatedMachine)
-            .Include(p => p.Builds).Where(p => p.Name.Contains(substring)).ToList();
+        return GetProjects().Where(p => p.Name.Contains(substring)).ToList();
     }
 
     public Build AddBuild(Guid projectId, string buildName, Guid storageId)

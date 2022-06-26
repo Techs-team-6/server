@@ -18,7 +18,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet]
-    public IReadOnlyCollection<Project> List()
+    public IEnumerable<Project> List()
     {
         return _service.GetProjects();
     }

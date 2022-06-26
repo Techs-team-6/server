@@ -9,7 +9,7 @@ using Server.Core.Services;
 
 namespace Server.Core.Test;
 
-public class InsatnceServiceTest
+public class InstanceServiceTest
 {
     private IInstanceService _service;
     private const int Count = 10;
@@ -28,7 +28,6 @@ public class InsatnceServiceTest
         var context = new ServerDbContext(options);
         context.Database.EnsureDeleted();
         context.Database.EnsureCreated();
-        _service = new InstanceService(context);
         _names = Enumerable.Range(0, Count)
             .Select(i => $"name{i}")
             .ToList();
@@ -37,12 +36,13 @@ public class InsatnceServiceTest
             .ToList();
         
         var projectService =  new ProjectService(context, new ProjectServiceClient("test", new HttpClient()));
-        var tokenSevice = new TokenService(context);
-        var dmService = new DedicatedMachineService(context, tokenSevice);
+        var tokenService = new TokenService(context);
+        var dmService = new DedicatedMachineService(context, tokenService);
+        _service = new InstanceService(context);
         _testProject = projectService.CreateProject(_names[0], _scripts[0]);
         _testBuild = projectService.AddBuild(_testProject.Id, _names[0], Guid.NewGuid());
         _testMachine =
-            dmService.RegisterMachine(new RegisterDto(tokenSevice.Generate("description"), "label", "description"));
+            dmService.RegisterMachine(new RegisterDto(tokenService.Generate("description"), "label", "description"));
     }
 
     [Test]
