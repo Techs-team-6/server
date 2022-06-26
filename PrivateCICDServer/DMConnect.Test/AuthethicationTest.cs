@@ -27,7 +27,7 @@ public class AuthenticationTest
     [Test]
     public void StartStopHubTest()
     {
-        var hub = new DedicatedMachineHub(_loggerFactory, Mock.Of<IDedicatedMachineService>(), 49999);
+        var hub = new DedicatedMachineHub(_loggerFactory, Mock.Of<IDedicatedMachineService>(), Mock.Of<IInstanceService>(), 49999);
         hub.Start();
         hub.Stop();
     }
@@ -77,7 +77,7 @@ public class AuthenticationTest
 
     private DedicatedMachineHub Hub(IDedicatedMachineService machineService, int port)
     {
-        return new DedicatedMachineHub(_loggerFactory, machineService, port);
+        return new DedicatedMachineHub(_loggerFactory, machineService, Mock.Of<IInstanceService>(), port);
     }
 
     private static DedicatedMachineHubClient HubClient(int port, string tokenString)

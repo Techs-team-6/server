@@ -23,7 +23,9 @@ public class HostedHubService : IHostedService
     {
         _scope = _scopeFactory.CreateScope();
         _hub = new DedicatedMachineHub(_loggerFactory,
-            _scope.ServiceProvider.GetRequiredService<IDedicatedMachineService>(), _port);
+            _scope.ServiceProvider.GetRequiredService<IDedicatedMachineService>(),
+            _scope.ServiceProvider.GetRequiredService<IInstanceService>(),
+            _port);
 
         _hub.Start();
         return Task.CompletedTask;

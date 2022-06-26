@@ -3,7 +3,8 @@ using DMConnect.Share;
 using DMConnect.Client;
 using Domain.Dto.DedicatedMachineDto;
 
-var endPoint = new IPEndPoint(IPAddress.Loopback, 50050);
+var port = int.Parse(args[1]);
+var endPoint = new IPEndPoint(IPAddress.Loopback, port);
 
 var token = args[0];
 var client = new DedicatedMachineHubClient(endPoint, new RegisterDto(

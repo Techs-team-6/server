@@ -2,8 +2,6 @@
 using DMConnect.Share;
 using DMConnect.Share.Tools;
 using Domain.Dto.DedicatedMachineDto;
-using Domain.Entities;
-using Domain.Services;
 using Domain.Tools;
 using Microsoft.Extensions.Logging;
 
@@ -12,21 +10,19 @@ namespace DMConnect.Server;
 public class MachineAgentClient : IDedicatedMachineAgent
 {
     private readonly ILogger<MachineAgentClient> _logger;
-    private readonly IDedicatedMachineService _machineService;
+    private readonly IMachineAgentEventListener _eventListener;
     private readonly TcpClient _client;
-    private readonly Action<MachineAgentClient> _onMachineAgentLeave;
     private readonly Stream _stream;
     private readonly Thread _thread;
 
     public Guid Id { get; private set; }
 
-    public MachineAgentClient(ILogger<MachineAgentClient> logger, IDedicatedMachineService machineService,
-        TcpClient client, Action<MachineAgentClient> onMachineAgentLeave, CancellationToken cancellationToken)
+    public MachineAgentClient(ILogger<MachineAgentClient> logger, IMachineAgentEventListener eventListener,
+        TcpClient client, CancellationToken cancellationToken)
     {
         _logger = logger;
-        _machineService = machineService;
+        _eventListener = eventListener;
         _client = client;
-        _onMachineAgentLeave = onMachineAgentLeave;
         _stream = new CancellableStreamWrapper(client.GetStream(), cancellationToken);
         _thread = new Thread(Serve);
     }
@@ -52,15 +48,13 @@ public class MachineAgentClient : IDedicatedMachineAgent
             }
             else
             {
-                _logger.LogError(e, "Exception acquired");                
+                _logger.LogError(e, "Exception acquired");
             }
         }
         finally
         {
             _client.Close();
-            _onMachineAgentLeave.Invoke(this);
-            if (Id != Guid.Empty)
-                _machineService.SetState(new SetStateDto(Id, DedicatedMachineState.Offline));
+            _eventListener.OnMachineAgentLeave(this);
             _logger.LogInformation("Stopped");
         }
     }
@@ -74,7 +68,7 @@ public class MachineAgentClient : IDedicatedMachineAgent
                 case AuthDto authDto:
                     try
                     {
-                        _machineService.AuthMachine(authDto);
+                        _eventListener.MachineAgentTryAuth(authDto);
                         Id = authDto.Id;
                     }
                     catch (AuthException e)
@@ -82,11 +76,12 @@ public class MachineAgentClient : IDedicatedMachineAgent
                         _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
                         _logger.LogInformation("Auth failed: {reason}", e.Message);
                     }
+
                     break;
                 case RegisterDto registerDto:
                     try
                     {
-                        var dedicatedMachine = _machineService.RegisterMachine(registerDto);
+                        var dedicatedMachine = _eventListener.MachineAgentTryRegister(registerDto);
                         Id = dedicatedMachine.Id;
                     }
                     catch (InvalidTokenException e)
@@ -94,6 +89,7 @@ public class MachineAgentClient : IDedicatedMachineAgent
                         _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
                         _logger.LogInformation("Register failed: {reason}", e.Message);
                     }
+
                     break;
                 default:
                     _stream.WriteActionDto(new AuthResultDto(false, Guid.Empty));
@@ -104,23 +100,14 @@ public class MachineAgentClient : IDedicatedMachineAgent
 
         _stream.WriteActionDto(new AuthResultDto(true, Id));
         _logger.LogInformation("Auth successful");
-        _machineService.SetState(new SetStateDto(Id, DedicatedMachineState.Online));
+        _eventListener.OnMachineAgentAuth(this);
     }
 
     private void ServeLoop()
     {
         while (true)
         {
-            var action = _stream.ReadActionDto();
-            switch (action)
-            {
-                case InstanceStdOutDto instanceStdOutDto:
-                    throw new NotImplementedException();
-                case InstanceStdErrDto instanceStdErrDto:
-                    throw new NotImplementedException();
-                default:
-                    throw new Exception("Unexpected action: " + action);
-            }
+            _eventListener.OnMachineAgentAction(_stream.ReadActionDto());
         }
     }
 

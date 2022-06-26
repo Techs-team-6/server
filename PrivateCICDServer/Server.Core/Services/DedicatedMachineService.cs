@@ -45,8 +45,7 @@ public class DedicatedMachineService : IDedicatedMachineService
 
     public void SetState(SetStateDto dto)
     {
-        var server = _context.DedicatedMachines.FirstOrDefault(s => s.Id == dto.ServerId)
-                     ?? throw new ServiceException($"There is no dedicated server with such id '{dto.ServerId}'");
+        var server = GetDedicatedMachine(dto.ServerId);
         server.State = dto.State;
         _context.SaveChanges();
     }
@@ -54,5 +53,10 @@ public class DedicatedMachineService : IDedicatedMachineService
     public List<DedicatedMachine> List()
     {
         return _context.DedicatedMachines.ToList();
+    }
+
+    public DedicatedMachine GetDedicatedMachine(Guid id)
+    {
+        return _context.DedicatedMachines.GetById(id);
     }
 }
