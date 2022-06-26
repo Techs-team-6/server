@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Instances;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Core.Test;
@@ -11,23 +12,14 @@ public class DbJokes
         {
             db.Database.EnsureDeleted();
             db.Database.EnsureCreated();
-            db.Projects.Add(new Project
-            {
-                Name = "Some name",
-                Repository = "Repository name",
-                BuildScript = "",
-            });
+            db.Projects.Add(new Project("name", "Repository name", "build"));
             db.SaveChanges();
         }
 
         using (var db = TestDb())
         {
             var project = db.Projects.First();
-            project.Builds.Add(new Build
-            {
-                Name = "BuildNameIsCool",
-                StorageId = Guid.NewGuid()
-            });
+            project.Builds.Add(new Build("BuildNameIsCool", Guid.NewGuid()));
 
             db.Update(project);
             db.SaveChanges();
@@ -36,20 +28,9 @@ public class DbJokes
         using (var db = TestDb())
         {
             var tokenId = Guid.NewGuid();
-            db.Tokens.Add(new Token
-            {
-                Id = tokenId,
-                Description = "description token",
-                CreationTime = DateTime.Now,
-                TokenStr = "asd"
-            });
+            db.Tokens.Add(new Token(tokenId, "asd", "description", DateTime.Now));
 
-            db.DedicatedMachines.Add(new DedicatedMachine
-            {
-                Label = "label",
-                Description = "description",
-                TokenId = tokenId,
-            });
+            db.DedicatedMachines.Add(new DedicatedMachine(tokenId, "label", "description"));
 
             db.SaveChanges();
         }
@@ -59,16 +40,7 @@ public class DbJokes
             var project = db.Projects.Include(p => p.Builds).First();
             var build = project.Builds.First();
             var dedicatedMachine = db.DedicatedMachines.First();
-            project.Instances.Add(new Instance
-                {
-                    InstanceConfig = new InstanceConfig
-                    {
-                        Build = build,
-                        DedicatedMachine = dedicatedMachine,
-                        StartString = "echo 123",
-                    }
-                }
-            );
+            project.Instances.Add(new Instance(new InstanceConfig(build.Id, dedicatedMachine.Id, "echo 123")));
 
             db.Update(project);
             db.SaveChanges();

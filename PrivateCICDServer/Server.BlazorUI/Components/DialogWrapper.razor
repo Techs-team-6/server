@@ -1,0 +1,28 @@
+﻿@code {
+    
+    [Parameter]
+    public Action? OnHide { get; set; }
+    
+    protected OurDialog? Dialog
+    {
+        get => _dialog;
+        set
+        {
+            _dialog = value;
+            if (_dialog is null) return;
+            _dialog.OnApprove = OnApprove;
+            _dialog.OnHide = OnHide;
+        }
+    }
+
+    public void Show()
+    {
+        Dialog?.Show();
+    }
+
+    protected virtual void OnApprove()
+    {
+    }
+
+    private OurDialog? _dialog;
+}

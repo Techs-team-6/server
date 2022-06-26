@@ -12,4 +12,6 @@ public interface IDedicatedMachineService
     void SetState(SetStateDto dto);
     
     List<DedicatedMachine> List();
+
+    DedicatedMachine GetDedicatedMachine(Guid id);
 }

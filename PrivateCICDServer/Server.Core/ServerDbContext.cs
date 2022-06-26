@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Instances;
 using Microsoft.EntityFrameworkCore;
 
 namespace Server.Core;
@@ -9,36 +10,46 @@ public sealed class ServerDbContext : DbContext
         : base(options)
     {
         Database.EnsureCreated();
+        SaveChanges();
     }
 
     // ReSharper disable once UnusedMember.Local
-    private DbSet<Build> Builds { get; set; } = null!;
+    public DbSet<Build> Builds { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
+    public DbSet<Instance> Instances { get; set; } = null!;
     public DbSet<Token> Tokens { get; set; } = null!;
     public DbSet<DedicatedMachine> DedicatedMachines { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(builder);
+        builder.Entity<Project>()
+            .HasMany(project => project.Builds)
+            .WithOne();
 
         builder.Entity<Project>()
-            .OwnsMany(p => p.Builds);
+            .HasMany(project => project.Instances)
+            .WithOne();
 
-        builder.Entity<Project>()
-            .OwnsMany(t => t.Instances)
-            .OwnsOne(t => t.InstanceConfig)
-            .HasOne(t => t.DedicatedMachine);
+        builder.Entity<Instance>()
+            .OwnsMany(instance => instance.StateChanges);
 
-        builder.Entity<Project>()
-            .OwnsMany(t => t.Instances)
-            .OwnsOne(t => t.InstanceConfig)
-            .OwnsOne(t => t.Build);
+        var instanceConfigEntity =
+            builder.Entity<Instance>()
+                .OwnsOne(instance => instance.InstanceConfig);
 
-        builder.Entity<Project>()
-            .OwnsMany(t => t.Instances)
-            .OwnsMany(t => t.StateChanges);
+        instanceConfigEntity
+            .HasOne<DedicatedMachine>()
+            .WithMany()
+            .HasForeignKey(config => config.DedicatedMachineId);
 
-        builder.Entity<Token>();
-        builder.Entity<DedicatedMachine>();
+        instanceConfigEntity
+            .HasOne<Build>()
+            .WithMany()
+            .HasForeignKey(config => config.BuildId);
+
+        builder.Entity<DedicatedMachine>()
+            .HasOne<Token>()
+            .WithMany()
+            .HasForeignKey(machine => machine.TokenId);
     }
 }

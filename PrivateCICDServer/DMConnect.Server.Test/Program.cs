@@ -5,7 +5,7 @@ using Domain.Services;
 using Microsoft.Extensions.Logging;
 
 var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-var hub = new DedicatedMachineHub(loggerFactory, new DedicatedMachineService(), 50050);
+var hub = new DedicatedMachineHub(loggerFactory, new DedicatedMachineService(), null!, 50050);
 hub.Start();
 hub.Start();
 
@@ -16,7 +16,7 @@ internal class DedicatedMachineService : IDedicatedMachineService
 {
     public DedicatedMachine RegisterMachine(RegisterDto dto)
     {
-        return new DedicatedMachine { Id = Guid.NewGuid() };
+        return new DedicatedMachine(Guid.NewGuid(), dto.Label, dto.Description);
     }
 
     public void AuthMachine(AuthDto dto)
@@ -31,5 +31,10 @@ internal class DedicatedMachineService : IDedicatedMachineService
     public List<DedicatedMachine> List()
     {
         return new List<DedicatedMachine>();
+    }
+
+    public DedicatedMachine GetDedicatedMachine(Guid id)
+    {
+        throw new NotImplementedException();
     }
 }

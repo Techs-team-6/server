@@ -6,38 +6,54 @@
 
 <div class="page">
     <div class="sidebar">
-        <NavMenu />
+        <NavMenu/>
     </div>
     <main>
         <div class="top-row px-4">
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
         <div class="content px-4">
-                @if (_isErrorActive)
-                {
-                    <Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isErrorActive" Animation="@DialogAnimation.SlideDown">
+
+            <ErrorBoundary @ref="_errorBoundary">
+                <ChildContent>
+                    @Body
+                </ChildContent>
+                <ErrorContent>
+                    <Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="true" Animation="@DialogAnimation.SlideDown">
                         <DialogHeader>
-                             <h3>@_title</h3>
+                            <h3>An error has occured</h3>
                         </DialogHeader>
                         <DialogBody>
-                            <p>@_message</p>
+                            <p>@context.Message</p>
                         </DialogBody>
                         <DialogFooter>
-                            <button type="button" class="btn btn-primary" @onclick="@HideError">Ok</button>
+                            <button type="button" class="btn btn-primary" @onclick="@(_ => _errorBoundary.Recover())">Reload</button>
                         </DialogFooter>
                     </Dialog>
-                }
-
-
-                <CascadingValue Value="this" Name="ErrorComponent">
-                @Body
-            </CascadingValue>
-        
-            </div>
+                </ErrorContent>
+            </ErrorBoundary>
+            @* @if (_isErrorActive) *@
+            @* { *@
+            @*     <Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isErrorActive" Animation="@DialogAnimation.SlideDown"> *@
+            @*         <DialogHeader> *@
+            @*             <h3>@_title</h3> *@
+            @*         </DialogHeader> *@
+            @*         <DialogBody> *@
+            @*             <p>@_message</p> *@
+            @*         </DialogBody> *@
+            @*         <DialogFooter> *@
+            @*             <button type="button" class="btn btn-primary" @onclick="@HideError">Ok</button> *@
+            @*         </DialogFooter> *@
+            @*     </Dialog> *@
+            @* } *@
+            @* <CascadingValue Value="this" Name="ErrorComponent">@Body</CascadingValue> *@
+        </div>
     </main>
 </div>
 
 @code {
+    private ErrorBoundary? _errorBoundary;
+
     bool _isErrorActive = false;
     string _title = "";
     string _message = "";
@@ -49,7 +65,7 @@
         this._message = message;
         StateHasChanged();
     }
-    
+
     public void ShowError(string message)
     {
         ShowError("An error has occured", message);

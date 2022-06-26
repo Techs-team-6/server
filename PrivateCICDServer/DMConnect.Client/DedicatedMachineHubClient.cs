@@ -141,4 +141,9 @@ public class DedicatedMachineHubClient : IDedicatedMachineHub
     {
         _stream.WriteActionDto(dto);
     }
+
+    public void InstanceSetState(InstanceSetStateDto dto)
+    {
+        _stream.WriteActionDto(dto);
+    }
 }

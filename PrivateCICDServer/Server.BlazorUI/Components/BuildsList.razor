@@ -1,0 +1,17 @@
+﻿@inherits Server.BlazorUI.Pages.Tools.CollectionConsumer<Server.API.Client.Contracts.Build>
+
+<CardList Collection="Collection" EmptyCollectionMessage="No builds yet">
+    <RenderCardView>
+        <div class="card">
+            <div class="card-header">
+                @context.Name
+            </div>
+            <div class="card-body">
+                <OurForm>
+                    <OurInput IsReadonly="true" Label="Id" Value="@context.Id.ToString()"/>
+                    <OurInput IsReadonly="true" Label="Storage Id" Value="@context.StorageId.ToString()"/>
+                </OurForm>
+            </div>
+        </div>
+    </RenderCardView>
+</CardList>

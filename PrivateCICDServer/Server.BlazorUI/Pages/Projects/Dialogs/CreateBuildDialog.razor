@@ -1,0 +1,24 @@
+﻿@using Server.API.Client
+@using Server.API.Client.Contracts
+@inject ProjectClient ProjectClient
+@inherits DialogWrapper
+
+<OurDialog Title="Create new build" ApproveText="Create" @ref="Dialog">
+    <OurForm>
+        <OurInput Label="Name" @bind-Value="Name"/>
+    </OurForm>
+</OurDialog>
+
+@code
+{
+    private string Name { get; set; } = "";
+
+    [Parameter]
+    public Project Project { get; set; } = null!;
+
+    protected override void OnApprove()
+    {
+        ProjectClient.AddBuildAsync(Project.Id, Name, Guid.NewGuid()).Wait();
+        Name = "";
+    }
+}
