@@ -82,7 +82,7 @@ public class DedicatedMachineHub : IMachineAgentEventListener
 
     public void OnMachineAgentLeave(MachineAgentClient machineAgent)
     {
-        if (machineAgent.Id != Guid.NewGuid())
+        if (machineAgent.Id != Guid.Empty)
             _machineMachineService.SetState(new SetStateDto(machineAgent.Id, DedicatedMachineState.Offline));
         lock (_clients)
         {
