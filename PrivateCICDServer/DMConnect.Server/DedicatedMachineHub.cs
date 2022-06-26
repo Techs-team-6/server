@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using DMConnect.Server.Tools;
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
@@ -17,6 +18,9 @@ public class DedicatedMachineHub : IMachineAgentEventListener
     private readonly Thread _thread;
     private readonly List<MachineAgentClient> _clients = new();
 
+    private readonly ExceptionLoggerSettings _exceptionLoggerSettings;
+    private readonly ExceptionLogger _exceptionLogger;
+
     private readonly CancellationTokenSource _cancellationTokenSource;
 
     public DedicatedMachineHub(ILoggerFactory loggerFactory, IDedicatedMachineService machineService,
@@ -29,6 +33,9 @@ public class DedicatedMachineHub : IMachineAgentEventListener
         _logger = _loggerFactory.CreateLogger<DedicatedMachineHub>();
         _thread = new Thread(ListenLoop);
         _cancellationTokenSource = new CancellationTokenSource();
+
+        _exceptionLoggerSettings = new ExceptionLoggerSettings {LogPath = "dm-hub-logger.txt"};
+        _exceptionLogger = new ExceptionLogger(_exceptionLoggerSettings);
     }
 
     public void Start()
@@ -112,6 +119,7 @@ public class DedicatedMachineHub : IMachineAgentEventListener
         {
             case InstanceStdOutDto stdOutDto:
             case InstanceStdErrDto stdErrDto:
+                _exceptionLogger.Write(action);
                 throw new NotImplementedException();
             case InstanceSetStateDto setStateDto:
                 _instanceService.ChangeInstanceState(setStateDto.InstanceId, setStateDto.InstanceState);
