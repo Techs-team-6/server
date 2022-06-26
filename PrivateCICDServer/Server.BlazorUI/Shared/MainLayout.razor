@@ -32,35 +32,18 @@
                     </Dialog>
                 </ErrorContent>
             </ErrorBoundary>
-            @* @if (_isErrorActive) *@
-            @* { *@
-            @*     <Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isErrorActive" Animation="@DialogAnimation.SlideDown"> *@
-            @*         <DialogHeader> *@
-            @*             <h3>@_title</h3> *@
-            @*         </DialogHeader> *@
-            @*         <DialogBody> *@
-            @*             <p>@_message</p> *@
-            @*         </DialogBody> *@
-            @*         <DialogFooter> *@
-            @*             <button type="button" class="btn btn-primary" @onclick="@HideError">Ok</button> *@
-            @*         </DialogFooter> *@
-            @*     </Dialog> *@
-            @* } *@
-            @* <CascadingValue Value="this" Name="ErrorComponent">@Body</CascadingValue> *@
         </div>
     </main>
 </div>
 
 @code {
     private ErrorBoundary? _errorBoundary;
-
-    bool _isErrorActive = false;
+    
     string _title = "";
     string _message = "";
 
     public void ShowError(string title, string message)
     {
-        this._isErrorActive = true;
         this._title = title;
         this._message = message;
         StateHasChanged();
@@ -69,10 +52,5 @@
     public void ShowError(string message)
     {
         ShowError("An error has occured", message);
-    }
-
-    private void HideError()
-    {
-        _isErrorActive = false;
     }
 }
