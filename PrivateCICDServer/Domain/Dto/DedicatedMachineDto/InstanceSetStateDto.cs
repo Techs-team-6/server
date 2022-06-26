@@ -1,4 +1,4 @@
-﻿using Domain.States;
+﻿using Domain.Entities.Instances;
 
 namespace Domain.Dto.DedicatedMachineDto;
 
