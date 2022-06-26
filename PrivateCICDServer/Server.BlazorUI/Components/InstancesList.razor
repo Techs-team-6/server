@@ -1,0 +1,19 @@
+﻿@inherits Server.BlazorUI.Pages.Tools.CollectionConsumer<Server.API.Client.Contracts.Instance>
+
+<CardList Collection="Collection" EmptyCollectionMessage="No instances yet">
+    <RenderCardView>
+        <div class="card">
+            <div class="card-header">
+                @context.Id
+            </div>
+            <div class="card-body">
+                <OurForm>
+                    <OurInput IsReadonly="true" Label="State" Value="@context.State.ToString()"/>
+                    <OurInput IsReadonly="true" Label="Start String" Value="@context.InstanceConfig.StartString.ToString()"/>
+                    <OurInput IsReadonly="true" Label="Machine Id" Value="@context.InstanceConfig.DedicatedMachineId.ToString()"/>
+                    <OurInput IsReadonly="true" Label="Build Id" Value="@context.InstanceConfig.BuildId.ToString()"/>
+                </OurForm>
+            </div>
+        </div>
+    </RenderCardView>
+</CardList>

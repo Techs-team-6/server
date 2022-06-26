@@ -1,0 +1,22 @@
+﻿@using Server.API.Client
+@inject ProjectClient ProjectClient
+@inject NavigationManager NavigationManager
+@inherits DialogWrapper
+
+<OurDialog Title="Create new project" ApproveText="Create" @ref="Dialog">
+    <OurForm>
+        <OurInput Label="Name" @bind-Value="Name"/>
+    </OurForm>
+</OurDialog>
+
+@code
+{
+    private string Name { get; set; } = "";
+
+    protected override void OnApprove()
+    {
+        var project = ProjectClient.CreateAsync(Name, "build").Result;
+        Name = "";
+        NavigationManager.NavigateTo($"projects/{project.Name}");
+    }
+}

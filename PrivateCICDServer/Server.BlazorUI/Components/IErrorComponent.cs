@@ -1,4 +1,4 @@
-namespace Server.BlazorUI.Pages.Components;
+namespace Server.BlazorUI.Components;
 
 public interface IErrorComponent
 {

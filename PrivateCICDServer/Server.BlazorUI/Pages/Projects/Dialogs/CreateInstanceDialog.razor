@@ -1,0 +1,33 @@
+﻿@inject InstanceClient InstanceClient;
+@using Server.API.Client
+@using Server.API.Client.Contracts
+@inherits DialogWrapper
+
+<OurDialog Title="Create new instance" ApproveText="Create" @ref="Dialog">
+    <OurForm>
+        <OurInput Label="Start string" @bind-Value="StartString"/>
+        <OurInput Label="Build id" @bind-Value="BuildId"/>
+        <OurInput Label="Machine id" @bind-Value="MachineId"/>
+    </OurForm>
+</OurDialog>
+
+@code
+{
+    private string StartString { get; set; } = "";
+    private string BuildId { get; set; } = "";
+    private string MachineId { get; set; } = "";
+
+    [Parameter]
+    public Project Project { get; set; } = null!;
+
+    protected override void OnApprove()
+    {
+        var buildId = Guid.Parse(BuildId);
+        var machineId = Guid.Parse(MachineId);
+        InstanceClient.RegisterInstanceAsync(Project.Id,
+            new InstanceConfig { BuildId = buildId, DedicatedMachineId = machineId, StartString = StartString }).Wait();
+        StartString = "";
+        BuildId = "";
+        MachineId = "";
+    }
+}

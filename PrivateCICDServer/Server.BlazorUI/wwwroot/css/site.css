@@ -10,6 +10,8 @@ h1:focus {
 
 a, .btn-link {
     color: #0071c1;
+    text-decoration: none;
+    background-color: transparent;
 }
 
 .btn-primary {
@@ -65,4 +67,13 @@ a, .btn-link {
 
 .form-group {
     margin-bottom: 1rem;
+}
+
+.container {
+    padding: 0.75rem;
+}
+
+.card {
+    width: 24rem;
+    margin: 1rem;
 }

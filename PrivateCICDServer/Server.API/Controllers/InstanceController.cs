@@ -1,27 +1,26 @@
+using Domain.Entities.Instances;
 using Domain.Services;
 using Microsoft.AspNetCore.Mvc;
-using InstanceConfig = Domain.Entities.InstanceConfig;
-using InstanceState = Domain.States.InstanceState;
 
 namespace Server.API.Controllers;
-
 
 [ApiController]
 [Route("[controller]/[action]")]
 public class InstanceController : ControllerBase
 {
     private readonly IInstanceService _service;
+
     public InstanceController(IInstanceService service)
     {
         _service = service;
     }
 
     [HttpPost]
-    public ActionResult RegisterInstance(Guid projectId, InstanceState initialState, string startString, Guid buildId, Guid machineId)
+    public ActionResult RegisterInstance(Guid projectId, InstanceConfig config)
     {
         try
         {
-            _service.RegisterInstance(projectId, initialState, startString, buildId, machineId);
+            _service.CreateInstance(projectId, config);
             return Ok();
         }
         catch (ArgumentOutOfRangeException e)
@@ -29,47 +28,21 @@ public class InstanceController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpPost]
-    public ActionResult ChangeInstanceState(Guid projectId, Guid instanceId, InstanceState newState)
+    public ActionResult ChangeInstanceState(Guid instanceId, InstanceState newState)
     {
-        _service.ChangeInstanceState(projectId, instanceId, newState);
+        _service.ChangeInstanceState(instanceId, newState);
         return Ok();
     }
-
+    
     [HttpPost]
-    public ActionResult UpdateConfiguration(Guid projectId, Guid instanceId, InstanceConfig instanceConfig)
+    public ActionResult UpdateConfiguration(Guid instanceId, InstanceConfig instanceConfig)
     {
         try
         {
-            _service.UpdateConfig(projectId, instanceId, instanceConfig);
+            _service.UpdateConfig(instanceId, instanceConfig);
             return Ok();
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
-    [HttpGet]
-    public ActionResult<InstanceConfig> GetConfiguration(Guid projectId, Guid instanceId)
-    {
-        try
-        {
-            return _service.GetConfiguration(projectId, instanceId);
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            return BadRequest(e.Message);
-        }
-    }
-
-    [HttpGet]
-    public ActionResult<IReadOnlyCollection<InstanceState>> ListAllStates(Guid projectId, Guid instanceId)
-    {
-        try
-        {
-            return _service.ListAllStates(projectId, instanceId).ToList();
         }
         catch (ArgumentOutOfRangeException e)
         {
@@ -78,11 +51,37 @@ public class InstanceController : ControllerBase
     }
     
     [HttpGet]
-    public ActionResult<IReadOnlyCollection<InstanceState>> ListLastStates(Guid projectId, Guid instanceId, int count)
+    public ActionResult<InstanceConfig> GetConfiguration(Guid instanceId)
     {
         try
         {
-            return _service.ListLastStates(projectId, instanceId, count).ToList();
+            return _service.GetConfiguration(instanceId);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpGet]
+    public ActionResult<IReadOnlyCollection<InstanceState>> ListAllStates(Guid instanceId)
+    {
+        try
+        {
+            return _service.ListAllStates(instanceId).ToList();
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+    
+    [HttpGet]
+    public ActionResult<IReadOnlyCollection<InstanceState>> ListLastStates(Guid instanceId, int count)
+    {
+        try
+        {
+            return _service.ListLastStates(instanceId, count).ToList();
         }
         catch (ArgumentOutOfRangeException e)
         {

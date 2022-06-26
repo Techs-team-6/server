@@ -6,7 +6,7 @@ public interface IProjectService
 {
     public Project CreateProject(string name, string buildScript);
 
-    public IReadOnlyList<Project> GetProjects();
+    public IEnumerable<Project> GetProjects();
 
     public Project GetProject(Guid id);
     

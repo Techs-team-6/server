@@ -1,116 +1,71 @@
-﻿@page "/Projects/{projectName}/"
+﻿@page "/projects/{projectName}/"
 @using Server.API.Client
 @using Server.API.Client.Contracts
+@using Server.BlazorUI.Pages.Projects.Dialogs
 @inject ProjectClient ProjectClient
-@inject InstanceClient InstanceClient
 @inject NavigationManager NavigationManager
 
 @{
-    Project project;
-    try
-    {
-        project = ProjectClient.GetAsync(ProjectName).Result;
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine(e.Message);
-        throw;
-    }
+    var project = ProjectClient.GetAsync(ProjectName).Result;
+}
+<h3>@project.Name</h3>
+<div class="container">
+    <h4>Information</h4>
     <OurForm>
         <OurInput IsReadonly="true" Label="Id" Value="@project.Id.ToString()"/>
         <OurInput IsReadonly="true" Label="Name" Value="@project.Name"/>
         <OurInput IsReadonly="true" Label="Repository" Value="@project.Repository"/>
         <OurInput IsReadonly="true" Label="BuildScript" Value="@project.BuildScript"/>
     </OurForm>
-    <a href="/Projects/">
-        <button class="btn btn-primary">Back to list</button>
-    </a>
-    <button class="btn btn-danger" @onclick="@(_ => _deleteDialog.Show(project))">Delete</button>
+</div>
 
-    <DeleteDialog @ref="_deleteDialog" OnDelete="@OnDelete"/>
-    
-    <div>
-        <h4>Builds</h4>
-        <button class="btn btn-primary" @onclick="@(_ => ChangeBuildsListVisibility())">@ButtonTitle(_showBuildList)</button>
-        <button class="btn btn-primary" @onclick="@(_ => _buildCreateDialog.Show(project))">New</button>
-        <CreateBuildDialog @ref="_buildCreateDialog" OnBuildCreate="@OnBuildCreate"/>
-        @if (_showBuildList)
-        {
-            @foreach (var build in project.Builds)
-            {
-                <style>
-            .card {
-                width: 18rem;
-                margin: 1rem 0;
-            }
-            a {
-                color: inherit;
-                text-decoration: inherit;
-            }
-        </style>
-                <div class="card">
-                    <div class="card-header">
-                        @build.Name
-                    </div>
-                    <OurForm>
-                        <OurInput IsReadonly="true" Label="Id" Value="@build.Id.ToString()"/>
-                        <OurInput IsReadonly="true" Label="Storage Id" Value="@build.StorageId.ToString()"/>
-                    </OurForm>
-                </div>
-            }
-        }
-    </div>
-
-
-    <h4>Instances</h4>
-    <button class="btn btn-primary" @onclick="@(_ => ChangeInstanceListVisibility())">@ButtonTitle(_showInstanceList)</button>
-    <button class="btn btn-primary" @onclick="@(_ => _instanceCreateDialog.Show(project.Id))">New</button>
-    <CreateInstanceDialog @ref="_instanceCreateDialog" OnInstanceCreate="@OnInstanceCreate"/>
+<div class="container">
+    <button class="btn btn-light" @onclick="@(_ => ToggleBuildsListVisibility())">
+        Builds
+    </button>
+    @if (_showBuildList)
+    {
+        <BuildsList Collection="@project.Builds"/>
+        <button class="btn btn-secondary" @onclick="@(_ => _createBuildDialog.Show())">New</button>
+    }
+</div>
+<div class="container">
+    <button class="btn btn-light" @onclick="@(_ => ToggleInstanceListVisibility())">
+        Instances
+    </button>
     @if (_showInstanceList)
     {
-        @foreach (var instance in project.Instances)
-        {
-            <style>
-        .card {
-            width: 18rem;
-            margin: 1rem 0;
-        }
-        a {
-            color: inherit;
-            text-decoration: inherit;
-        }
-            </style>
-            <div class="card">
-                <div class="card-header">
-                    @instance.Id
-                </div>
-                <OurForm>
-                    <OurInput IsReadonly="true" Label="State" Value="@instance.State.ToString()"/>
-                    <OurInput IsReadonly="true" Label="Machine Id" Value="@instance.InstanceConfig.DedicatedMachine.Id.ToString()"/>
-                </OurForm>
-            </div>
-        }
+        <InstancesList Collection="@project.Instances"/>
+        <button class="btn btn-secondary" @onclick="@(_ => _instanceCreateDialog.Show())">New</button>
     }
-}
+</div>
+
+<a href="/projects/" class="btn btn-secondary" role="button" aria-pressed="true">Back to list</a>
+<button class="btn btn-danger" @onclick="@(_ => _deleteDialog.Show(project))">Delete</button>
+
+<DeleteDialog @ref="_deleteDialog" OnDelete="@OnDelete"/>
+<CreateBuildDialog @ref="_createBuildDialog" Project="@project" OnHide="@StateHasChanged"/>
+<CreateInstanceDialog @ref="_instanceCreateDialog" Project="@project" OnHide="@StateHasChanged"/>
 
 @code {
     DeleteDialog _deleteDialog = null!;
-    CreateBuildDialog _buildCreateDialog = null!;
+    CreateBuildDialog _createBuildDialog = null!;
     CreateInstanceDialog _instanceCreateDialog = null!;
-    bool _showBuildList = false;
-    bool _showInstanceList = false;
-    
+    bool _showBuildList = true;
+    bool _showInstanceList = true;
+
     [CascadingParameter(Name = "ErrorComponent")]
     protected IErrorComponent ErrorComponent { get; set; } = null!;
 
-    [Parameter] public string ProjectName { get; set; } = "";
+    [Parameter]
+    public string ProjectName { get; set; } = "";
 
     private void OnDelete(Project project)
     {
         try
         {
             ProjectClient.DeleteAsync(project.Id).Wait();
-            NavigationManager.NavigateTo("Projects/");
+            NavigationManager.NavigateTo("/projects/");
         }
         catch (Exception e)
         {
@@ -118,46 +73,14 @@
         }
     }
 
-    private void OnBuildCreate(Guid id, string name, Guid storageId)
-    {
-        try
-        {
-            var result = ProjectClient.AddBuildAsync(id, name, storageId).Result;
-            NavigationManager.NavigateTo($"Projects/{ProjectName}");
-        }
-        catch (Exception e)
-        {
-            ErrorComponent.ShowError(e.Message);
-        }
-       
-    }
-    
-    private void OnInstanceCreate(Guid projectId, string startingString, Guid buildId, Guid machineId)
-    {
-        try
-        {
-            var result = InstanceClient.RegisterInstanceAsync(projectId, InstanceState.NotPublished, startingString, buildId, machineId).Result;
-            NavigationManager.NavigateTo($"Projects/{ProjectName}");
-        }
-        catch (Exception e)
-        {
-            ErrorComponent.ShowError(e.Message);
-        }
-        
-    }
-
-    private void ChangeBuildsListVisibility()
+    private void ToggleBuildsListVisibility()
     {
         _showBuildList = !_showBuildList;
     }
-    
-    private void ChangeInstanceListVisibility()
+
+    private void ToggleInstanceListVisibility()
     {
         _showInstanceList = !_showInstanceList;
     }
 
-    private static string ButtonTitle(bool visible)
-    {
-        return visible ? "Hide" : "Show";
-    }
 }
