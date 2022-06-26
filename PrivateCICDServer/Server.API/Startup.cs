@@ -1,6 +1,7 @@
 ﻿using Domain.Services;
 using ProjectServiceApiClient;
 using Server.API.Services;
+using Server.API.Tools;
 using Server.Core;
 using Server.Core.Services;
 
@@ -57,10 +58,11 @@ public class Startup
             app.UseSwaggerUI();
         }
 
-        // app.UseHttpsRedirection();
-
         app.UseRouting();
         app.UseAuthorization();
+        
+        app.UseMiddleware<ErrorHandler>();
+        
         app.UseEndpoints(endpoints => endpoints.MapControllers());
     }
 }
