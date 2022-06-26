@@ -3,7 +3,7 @@ using Domain.Tools;
 
 namespace Domain.Entities;
 
-public class Project : IHasId
+public class Project : IHaveId
 {
     public Project(string name, string repository, string buildScript) :
         this(Guid.NewGuid(), name, repository, buildScript, new List<Build>(), new List<Instance>())

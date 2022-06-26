@@ -2,7 +2,7 @@ using Domain.Tools;
 
 namespace Domain.Entities.Instances;
 
-public class Instance : IHasId
+public class Instance : IHaveId
 {
     public Instance(InstanceConfig instanceConfig)
         : this(Guid.NewGuid(), instanceConfig, InstanceState.NotPublished)

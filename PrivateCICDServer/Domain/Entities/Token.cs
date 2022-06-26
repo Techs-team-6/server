@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class Token : IHasId
+public class Token : IHaveId
 {
     public Token(string tokenStr, string description)
         : this(Guid.NewGuid(), tokenStr, description, DateTime.Now)

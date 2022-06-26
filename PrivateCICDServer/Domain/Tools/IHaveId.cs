@@ -1,6 +1,6 @@
 ﻿namespace Domain.Tools;
 
-public interface IHasId
+public interface IHaveId
 {
     public Guid Id { get; }
 }

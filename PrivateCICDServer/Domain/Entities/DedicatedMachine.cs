@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class DedicatedMachine : IHasId
+public class DedicatedMachine : IHaveId
 {
     public DedicatedMachine(Guid tokenId, string label, string description)
         : this(Guid.NewGuid(), tokenId, label, description, DedicatedMachineState.Offline)

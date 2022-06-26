@@ -2,7 +2,7 @@
 
 namespace Domain.Entities;
 
-public class Build : IHasId
+public class Build : IHaveId
 {
     public Build(string name, Guid storageId)
         : this(Guid.NewGuid(), name, storageId)
