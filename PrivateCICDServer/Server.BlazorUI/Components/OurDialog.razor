@@ -1,0 +1,54 @@
+﻿<Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
+    <DialogHeader>
+        <h4>@Title</h4>
+    </DialogHeader>
+    <DialogBody>
+        @ChildContent
+    </DialogBody>
+    <DialogFooter>
+        <button type="button" class="btn btn-primary" @onclick="@Approve">@ApproveText</button>
+        <button type="button" class="btn btn-secondary" @onclick="@Hide">@CancelText</button>
+    </DialogFooter>
+</Dialog>
+
+@code
+{
+    [Parameter]
+    public string Title { get; set; } = null!;
+
+    [Parameter]
+    public string ApproveText { get; set; } = null!;
+
+    [Parameter]
+    public string CancelText { get; set; } = "Cancel";
+    
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public Action? OnApprove { get; set; }
+    
+    [Parameter]
+    public Action? OnHide { get; set; }
+
+    private bool _isShown = false;
+
+    public void Show()
+    {
+        _isShown = true;
+        StateHasChanged();
+    }
+
+    private void Hide()
+    {
+        _isShown = false;
+        StateHasChanged();
+        OnHide?.Invoke();
+    }
+
+    private void Approve()
+    {
+        OnApprove?.Invoke();
+        Hide();
+    }
+}

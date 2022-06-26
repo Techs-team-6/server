@@ -1,8 +1,8 @@
 ﻿@page "/projects/{projectName}/"
 @using Server.API.Client
 @using Server.API.Client.Contracts
+@using Server.BlazorUI.Pages.Projects.Dialogs
 @inject ProjectClient ProjectClient
-@inject InstanceClient InstanceClient
 @inject NavigationManager NavigationManager
 
 @{
@@ -26,7 +26,7 @@
     @if (_showBuildList)
     {
         <BuildsList Collection="@project.Builds"/>
-        <button class="btn btn-secondary" @onclick="@(_ => _buildCreateDialog.Show(project))">New</button>
+        <button class="btn btn-secondary" @onclick="@(_ => _createBuildDialog.Show())">New</button>
     }
 </div>
 <div class="container">
@@ -36,7 +36,7 @@
     @if (_showInstanceList)
     {
         <InstancesList Collection="@project.Instances"/>
-        <button class="btn btn-secondary" @onclick="@(_ => _instanceCreateDialog.Show(project.Id))">New</button>
+        <button class="btn btn-secondary" @onclick="@(_ => _instanceCreateDialog.Show())">New</button>
     }
 </div>
 
@@ -44,12 +44,12 @@
 <button class="btn btn-danger" @onclick="@(_ => _deleteDialog.Show(project))">Delete</button>
 
 <DeleteDialog @ref="_deleteDialog" OnDelete="@OnDelete"/>
-<CreateBuildDialog @ref="_buildCreateDialog" OnBuildCreate="@OnBuildCreate"/>
-<CreateInstanceDialog @ref="_instanceCreateDialog" OnInstanceCreate="@OnInstanceCreate"/>
+<CreateBuildDialog @ref="_createBuildDialog" Project="@project" OnHide="@StateHasChanged"/>
+<CreateInstanceDialog @ref="_instanceCreateDialog" Project="@project" OnHide="@StateHasChanged"/>
 
 @code {
     DeleteDialog _deleteDialog = null!;
-    CreateBuildDialog _buildCreateDialog = null!;
+    CreateBuildDialog _createBuildDialog = null!;
     CreateInstanceDialog _instanceCreateDialog = null!;
     bool _showBuildList = true;
     bool _showInstanceList = true;
@@ -65,34 +65,12 @@
         try
         {
             ProjectClient.DeleteAsync(project.Id).Wait();
-            NavigationManager.NavigateTo("Projects/");
+            NavigationManager.NavigateTo("/projects/");
         }
         catch (Exception e)
         {
             ErrorComponent.ShowError(e.Message);
         }
-    }
-
-    private void OnBuildCreate(Guid id, string name, Guid storageId)
-    {
-        try
-        {
-            var result = ProjectClient.AddBuildAsync(id, name, storageId).Result;
-            StateHasChanged();
-        }
-        catch (Exception e)
-        {
-            ErrorComponent.ShowError(e.Message);
-        }
-    }
-
-    private void OnInstanceCreate(Guid projectId, string startingString, Guid buildId, Guid machineId)
-    {
-        var result = InstanceClient.RegisterInstanceAsync(projectId, new InstanceConfig
-        {
-            BuildId = buildId, DedicatedMachineId = machineId, StartString = startingString
-        }).Result;
-        StateHasChanged();
     }
 
     private void ToggleBuildsListVisibility()
