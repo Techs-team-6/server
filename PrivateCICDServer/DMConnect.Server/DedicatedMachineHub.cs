@@ -112,10 +112,10 @@ public class DedicatedMachineHub : IMachineAgentEventListener
         {
             case InstanceStdOutDto stdOutDto:
             case InstanceStdErrDto stdErrDto:
-            case InstanceSetStateDto setStateDto:
                 throw new NotImplementedException();
-                // _instanceService.ChangeInstanceState(setStateDto.InstanceId, setStateDto.InstanceState);
-                // break;
+            case InstanceSetStateDto setStateDto:
+                _instanceService.ChangeInstanceState(setStateDto.InstanceId, setStateDto.InstanceState);
+                break;
             default:
                 throw new Exception("Unexpected action: " + action);
         }
