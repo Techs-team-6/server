@@ -1,4 +1,4 @@
-namespace Domain.States;
+namespace Domain.Entities.Instances;
 
 public enum InstanceState
 {

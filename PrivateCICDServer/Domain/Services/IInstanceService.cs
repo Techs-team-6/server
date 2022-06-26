@@ -1,13 +1,13 @@
-using Domain.Entities;
-using Domain.States;
+using Domain.Entities.Instances;
 
 namespace Domain.Services;
+
 public interface IInstanceService
 {
-    Instance RegisterInstance(Guid projectId, InstanceState initialState, string startString, Guid buildId, Guid machineId);
-    void ChangeInstanceState(Guid projectId, Guid instanceId, InstanceState newState);
-    InstanceConfig GetConfiguration(Guid projectId, Guid instanceId);
-    void UpdateConfig(Guid projectId, Guid instanceId, InstanceConfig newConfig);
-    IReadOnlyCollection<InstanceState> ListAllStates(Guid projectId, Guid instanceId);
-    IReadOnlyCollection<InstanceState> ListLastStates(Guid projectId, Guid instanceId, int numberOfStates);
+    Instance CreateInstance(Guid projectId, InstanceConfig instanceConfig);
+    void ChangeInstanceState(Guid instanceId, InstanceState newState);
+    InstanceConfig GetConfiguration(Guid instanceId);
+    void UpdateConfig(Guid instanceId, InstanceConfig newConfig);
+    IReadOnlyCollection<InstanceState> ListAllStates(Guid instanceId);
+    IReadOnlyCollection<InstanceState> ListLastStates(Guid instanceId, int numberOfStates);
 }

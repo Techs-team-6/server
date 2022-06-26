@@ -16,7 +16,7 @@ internal class DedicatedMachineService : IDedicatedMachineService
 {
     public DedicatedMachine RegisterMachine(RegisterDto dto)
     {
-        return new DedicatedMachine { Id = Guid.NewGuid() };
+        return new DedicatedMachine(Guid.NewGuid(), dto.Label, dto.Description);
     }
 
     public void AuthMachine(AuthDto dto)

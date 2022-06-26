@@ -104,12 +104,12 @@ public class AuthenticationTest
             {
                 if (dto.TokenString != acceptedRegisterToken)
                     throw new InvalidTokenException("Invalid token");
-                return new DedicatedMachine
-                {
-                    Id = registerMachineId,
-                    Description = "Machine description",
-                    Label = "Label"
-                };
+                return new DedicatedMachine(
+                    registerMachineId,
+                    Guid.NewGuid(),
+                    "Label",
+                    "Machine description",
+                    DedicatedMachineState.Offline);
             });
 
         return machineService;

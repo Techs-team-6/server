@@ -20,13 +20,7 @@ public class DedicatedMachineService : IDedicatedMachineService
     {
         var token = _tokenService.FindByTokenString(dto.TokenString) ??
                     throw new InvalidTokenException("Invalid token");
-        var dedicatedServer = new DedicatedMachine
-        {
-            TokenId = token.Id,
-            Label = dto.Label,
-            Description = dto.Description,
-            State = DedicatedMachineState.Offline,
-        };
+        var dedicatedServer = new DedicatedMachine(token.Id, dto.Label, dto.Description);
 
         _context.DedicatedMachines.Add(dedicatedServer);
         _context.SaveChanges();

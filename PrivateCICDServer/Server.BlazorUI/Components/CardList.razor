@@ -1,0 +1,28 @@
+﻿@typeparam TItem
+
+@if (Collection.Count == 0)
+{
+    <h6 class="card-subtitle mb-2 text-muted">@EmptyCollectionMessage</h6>
+}
+else
+{
+    foreach (var item in Collection)
+    {
+        @RenderCardView(item)
+    }
+}
+
+@code {
+
+    [Parameter]
+    public ICollection<TItem> Collection { get; set; } = null!;
+    
+    [Parameter]
+    public string EmptyCollectionMessage { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment<TItem> RenderCardView { get; set; } = item =>
+    {
+        return @<p>Hello</p>;
+    };
+}

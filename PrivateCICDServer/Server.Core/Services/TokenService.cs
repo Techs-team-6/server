@@ -7,20 +7,15 @@ namespace Server.Core.Services;
 public class TokenService : ITokenService
 {
     private readonly ServerDbContext _context;
-    
+
     public TokenService(ServerDbContext context)
     {
         _context = context;
     }
-    
+
     public string Generate(string description)
     {
-        var token = new Token
-        {
-            Description = description ?? throw new ArgumentNullException(nameof(description)),
-            CreationTime = DateTime.Now,
-            TokenStr = GenerateTokenString(),
-        };
+        var token = new Token(GenerateTokenString(), description);
         _context.Tokens.Add(token);
         _context.SaveChanges();
         return token.TokenStr;
@@ -28,17 +23,15 @@ public class TokenService : ITokenService
 
     public void Edit(Guid id, string description)
     {
-        var token = _context.Tokens.FirstOrDefault(t => t.Id == id)
-                    ?? throw new ServiceException($"There is not token with such id: {id}");
+        var token = _context.Tokens.GetById(id);
         token.Description = description;
+        _context.Update(token);
         _context.SaveChanges();
     }
 
     public void Refuse(Guid id)
     {
-        var token = _context.Tokens.FirstOrDefault(t => t.Id == id);
-        if (token is null)
-            throw new ServiceException($"There is no token with such id: '{id}'");
+        var token = _context.Tokens.GetById(id);
         _context.Tokens.Remove(token);
         _context.SaveChanges();
     }
@@ -61,8 +54,8 @@ public class TokenService : ITokenService
     private string GenerateTokenString()
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
- 
-        var random       = new Random();
+
+        var random = new Random();
         var randomString = new string(Enumerable.Repeat(chars, 32)
             .Select(s => s[random.Next(s.Length)]).ToArray());
         return randomString;
