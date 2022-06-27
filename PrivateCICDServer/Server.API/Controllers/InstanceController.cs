@@ -16,17 +16,9 @@ public class InstanceController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult CreateInstance(Guid projectId, string name, InstanceConfig config)
+    public Instance RegisterInstance(Guid projectId, string name, InstanceConfig config)
     {
-        try
-        {
-            _service.CreateInstance(projectId, name,  config);
-            return Ok();
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            return BadRequest(e.Message);
-        }
+        return _service.CreateInstance(projectId, name, config);
     }
 
     [HttpGet]
@@ -48,20 +40,13 @@ public class InstanceController : ControllerBase
         _service.UpdateConfig(instanceId, instanceConfig);
         return Ok();
     }
-
+    
     [HttpGet]
     public ActionResult<InstanceConfig> GetConfiguration(Guid instanceId)
     {
-        try
-        {
-            return _service.GetConfiguration(instanceId);
-        }
-        catch (ArgumentOutOfRangeException e)
-        {
-            return BadRequest(e.Message);
-        }
+        return _service.GetConfiguration(instanceId);
     }
-
+    
     [HttpGet]
     public ActionResult<IReadOnlyCollection<InstanceState>> ListAllStates(Guid instanceId)
     {
