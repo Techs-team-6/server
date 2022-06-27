@@ -1,7 +1,6 @@
 ﻿using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
-using Domain.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.API.Controllers;

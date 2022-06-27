@@ -26,14 +26,14 @@ public class ErrorHandler
 
             response.StatusCode = error switch
             {
-                AuthException e => (int) HttpStatusCode.Unauthorized,
-                EntityNotFoundException e => (int) HttpStatusCode.NotFound,
-                InvalidTokenException e => (int) HttpStatusCode.BadRequest,
-                ServiceException e => (int) HttpStatusCode.BadRequest,
-                _ => (int) HttpStatusCode.InternalServerError
+                AuthException _ => (int)HttpStatusCode.Unauthorized,
+                EntityNotFoundException _ => (int)HttpStatusCode.NotFound,
+                InvalidTokenException _ => (int)HttpStatusCode.BadRequest,
+                ServiceException _ => (int)HttpStatusCode.BadRequest,
+                _ => (int)HttpStatusCode.InternalServerError
             };
-            
-          await response.WriteAsync( JsonSerializer.Serialize(new ErrorDetails(error?.Message ?? "Error has no description")));
+
+            await response.WriteAsync(JsonSerializer.Serialize(new ErrorDetails(error.Message)));
         }
     }
 }

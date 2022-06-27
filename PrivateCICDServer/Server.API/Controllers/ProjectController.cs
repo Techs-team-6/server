@@ -1,7 +1,5 @@
-﻿using System.Runtime.Serialization;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Services;
-using Domain.Tools;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Server.API.Controllers;
@@ -24,34 +22,31 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<Project> Get(string name)
+    public Project Get(string name)
     {
-        var project = _service.GetProject(name);
-        return project;
+        return _service.GetProject(name);
     }
 
     [HttpPost]
-    public ActionResult<Project> Create(string name, string buildScript)
+    public Project Create(string name, string buildScript)
     {
         return _service.CreateProject(name, buildScript);
     }
-    
+
     [HttpPost]
-    public ActionResult Edit(Guid id, string name, string repository, string buildScript)
+    public void Edit(Guid id, string name, string repository, string buildScript)
     {
         _service.EditProject(id, name, repository, buildScript);
-        return Ok();
     }
 
     [HttpPost]
-    public ActionResult Delete(Guid id)
+    public void Delete(Guid id)
     {
         _service.DeleteProject(id);
-        return Ok();
     }
 
     [HttpPost]
-    public ActionResult<Build> AddBuild(Guid projectId, string buildName, Guid storageId)
+    public Build AddBuild(Guid projectId, string buildName, Guid storageId)
     {
         return _service.AddBuild(projectId, buildName, storageId);
     }

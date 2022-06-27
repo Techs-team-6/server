@@ -25,7 +25,7 @@
                             <h3>An error has occured</h3>
                         </DialogHeader>
                         <DialogBody>
-                            <p>@ErrorParser.GetErrorMessage(context.Message)</p>
+                            <p>@ExceptionParser.Parse(context)</p>
                         </DialogBody>
                         <DialogFooter>
                             <button type="button" class="btn btn-primary" @onclick="@(_ => _errorBoundary.Recover())">Reload</button>
@@ -76,4 +76,5 @@
     {
         _isErrorActive = false;
     }
+
 }

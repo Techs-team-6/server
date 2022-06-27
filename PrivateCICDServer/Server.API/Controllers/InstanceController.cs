@@ -28,27 +28,25 @@ public class InstanceController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult ChangeInstanceState(Guid instanceId, InstanceState newState)
+    public void ChangeInstanceState(Guid instanceId, InstanceState newState)
     {
         _service.ChangeInstanceState(instanceId, newState);
-        return Ok();
     }
     
     [HttpPost]
-    public ActionResult UpdateConfiguration(Guid instanceId, InstanceConfig instanceConfig)
+    public void UpdateConfiguration(Guid instanceId, InstanceConfig instanceConfig)
     {
         _service.UpdateConfig(instanceId, instanceConfig);
-        return Ok();
     }
     
     [HttpGet]
-    public ActionResult<InstanceConfig> GetConfiguration(Guid instanceId)
+    public InstanceConfig GetConfiguration(Guid instanceId)
     {
         return _service.GetConfiguration(instanceId);
     }
     
     [HttpGet]
-    public ActionResult<IReadOnlyCollection<InstanceState>> ListAllStates(Guid instanceId)
+    public IReadOnlyCollection<InstanceState> ListAllStates(Guid instanceId)
     {
         return _service.ListAllStates(instanceId).ToList();
     }
@@ -60,7 +58,7 @@ public class InstanceController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IReadOnlyCollection<InstanceState>> ListLastStates(Guid instanceId, int count)
+    public IReadOnlyCollection<InstanceState> ListLastStates(Guid instanceId, int count)
     {
         return _service.ListLastStates(instanceId, count).ToList();
     }
