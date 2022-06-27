@@ -1,5 +1,5 @@
 ﻿using Domain.Services;
-using ProjectServiceApiClient;
+using ProjectServiceApi;
 using Server.API.Services;
 using Server.API.Tools;
 using Server.Core;
@@ -11,7 +11,7 @@ public class Startup
 {
     public static void Main(string[] args)
     {
-        Environment.SetEnvironmentVariable("WITHOUT_PS", "true");
+        // Environment.SetEnvironmentVariable("WITHOUT_PS", "true");
 
         Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
@@ -34,10 +34,11 @@ public class Startup
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IBuildingService, DummyBuildingService>();
         services.AddScoped<IMasterService, MasterService>();
+        services.AddScoped<INameValidatorService, NameValidatorService>();
         services.AddScoped(provider =>
         {
             var settings = provider.GetRequiredService<Settings>();
-            return new ProjectServiceClient(settings.ProjectBuildingServiceUrl, new HttpClient());
+            return new ProjectServiceApiClient(settings.ProjectBuildingServiceUrl, new HttpClient());
         });
 
         services.AddScoped<IDedicatedMachineService, DedicatedMachineService>();

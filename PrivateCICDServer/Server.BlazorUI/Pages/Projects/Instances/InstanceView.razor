@@ -1,0 +1,55 @@
+﻿@page "/projects/{ProjectName}/instances/{InstanceName}"
+@using Server.API.Client
+@inject ProjectClient ProjectClient
+@inject InstanceClient InstanceClient
+@inject DmClient DmClient
+@inject NavigationManager NavigationManager
+@{
+    var project = ProjectClient.GetAsync(ProjectName).Result;
+    _instance = project.Instances.FirstOrDefault(instance => InstanceName.Equals(instance.Name, StringComparison.OrdinalIgnoreCase))
+                ?? throw new Exception($"Project '{ProjectName}' does not have instance with name '{InstanceName}'");
+    var build = project.Builds.First(build => build.Id == _instance.InstanceConfig.BuildId);
+    var machine = DmClient.GetMachineAsync(_instance.InstanceConfig.DedicatedMachineId).Result;
+}
+
+<div class="container">
+    <h3>@_instance.Name</h3>
+</div>
+<div class="container">
+    <h4>Information</h4>
+</div>
+<div class="container">
+    <OurForm>
+        <OurInput IsReadonly="true" Label="Id" Value="@_instance.Id.ToString()"/>
+        <OurInput IsReadonly="true" Label="Name" Value="@_instance.Name"/>
+        <OurInput IsReadonly="true" Label="State" Value="@_instance.State.ToString()"/>
+        <OurInput IsReadonly="true" Label="Build" Value="@build.Name"/>
+        <OurInput IsReadonly="true" Label="Machine" Value="@machine.Label"/>
+    </OurForm>
+</div>
+
+<button type="button" class="btn btn-danger" @onclick="@DeleteInstance">Delete</button>
+<button type="button" class="btn btn-primary" @onclick="@StartInstance">Start</button>
+<InstanceStateChangesView Collection="@_instance.StateChanges"/>
+
+@code {
+    private Instance _instance = null!;
+
+    [Parameter]
+    public string ProjectName { get; set; } = null!;
+
+    [Parameter]
+    public string InstanceName { get; set; } = null!;
+
+    private void DeleteInstance()
+    {
+        NavigationManager.NavigateTo($"/projects/{ProjectName}");
+        InstanceClient.DeleteInstanceAsync(_instance.Id).Wait();
+    }
+
+    private void StartInstance()
+    {
+        InstanceClient.StartInstanceAsync(_instance.Id).Wait();
+    }
+
+}

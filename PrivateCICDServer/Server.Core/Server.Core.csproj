@@ -9,11 +9,12 @@
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.5" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
-      <PackageReference Include="ProjectServiceClient" Version="1.1.1" />
+      <PackageReference Include="ProjectServiceClient" Version="1.2.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Domain\Domain.csproj" />
+        <ProjectReference Include="../DMConnect.Server/DMConnect.Server.csproj"/>
+        <ProjectReference Include="../Domain/Domain.csproj"/>
     </ItemGroup>
 
 </Project>

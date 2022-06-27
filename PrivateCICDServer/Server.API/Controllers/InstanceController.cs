@@ -16,10 +16,23 @@ public class InstanceController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult RegisterInstance(Guid projectId, InstanceConfig config)
+    public ActionResult CreateInstance(Guid projectId, string name, InstanceConfig config)
     {
-        _service.CreateInstance(projectId, config);
-        return Ok();
+        try
+        {
+            _service.CreateInstance(projectId, name,  config);
+            return Ok();
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet]
+    public void DeleteInstance(Guid instanceId)
+    {
+        _service.DeleteInstance(instanceId);
     }
 
     [HttpPost]
@@ -35,19 +48,32 @@ public class InstanceController : ControllerBase
         _service.UpdateConfig(instanceId, instanceConfig);
         return Ok();
     }
-    
+
     [HttpGet]
     public ActionResult<InstanceConfig> GetConfiguration(Guid instanceId)
     {
-        return _service.GetConfiguration(instanceId);
+        try
+        {
+            return _service.GetConfiguration(instanceId);
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return BadRequest(e.Message);
+        }
     }
-    
+
     [HttpGet]
     public ActionResult<IReadOnlyCollection<InstanceState>> ListAllStates(Guid instanceId)
     {
         return _service.ListAllStates(instanceId).ToList();
     }
-    
+
+    [HttpGet]
+    public void StartInstance(Guid instanceId)
+    {
+        _service.StartInstance(instanceId);
+    }
+
     [HttpGet]
     public ActionResult<IReadOnlyCollection<InstanceState>> ListLastStates(Guid instanceId, int count)
     {

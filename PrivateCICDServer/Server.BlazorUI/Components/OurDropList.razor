@@ -1,0 +1,70 @@
+﻿@typeparam TItem
+@typeparam TValue
+
+<tr>
+    <td>
+        <label class="col-form-label">@Label</label>
+    </td>
+    <td>
+        <select class="custom-select" @onchange="OnChange">
+            <option selected value="0">@DefaultOptionName</option>
+            @{
+                var index = 0;
+                foreach (var item in Items)
+                {
+                    index++;
+                    <option value="@index">@ItemToLabel(item)</option>
+                }
+            }
+        </select>
+    </td>
+</tr>
+
+@code {
+    private TValue? _value;
+
+    [Parameter]
+    public string Label { get; set; } = "Default Label Name";
+
+    [Parameter]
+    public string DefaultOptionName { get; set; } = "Select...";
+
+    [Parameter]
+    public IReadOnlyList<TItem> Items { get; set; } = null!;
+
+    [Parameter]
+    public Func<TItem, string> ItemToLabel { get; set; } = null!;
+
+    [Parameter]
+    public Func<TItem, TValue> ItemToValue { get; set; } = null!;
+
+    private void OnChange(ChangeEventArgs eventArgs)
+    {
+        var index = int.Parse(eventArgs.Value!.ToString() ?? string.Empty);
+        Value = index == 0 ? default : ItemToValue(Items[index - 1]);
+    }
+
+    [Parameter]
+    public TValue? Value
+    {
+        get => _value;
+        set
+        {
+            if (value is not null)
+            {
+                if (value.Equals(_value))
+                    return;
+            }
+            else if (_value is null)
+            {
+                return;
+            }
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+}

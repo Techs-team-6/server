@@ -3,21 +3,22 @@ using Domain.Entities.Instances;
 using Domain.Services;
 using Domain.Tools;
 using Microsoft.EntityFrameworkCore;
-using ProjectServiceApiClient;
-using ProjectServiceApiClient.Models;
+using ProjectServiceApi;
 
 namespace Server.Core.Services;
 
 public class ProjectService : IProjectService
 {
     private readonly ServerDbContext _context;
-    private readonly ProjectServiceClient _projectServiceClient;
-    private readonly INameValidatorService _nameValidatorService = new NameValidatorService();
+    private readonly ProjectServiceApiClient _projectServiceClient;
+    private readonly INameValidatorService _nameValidatorService;
 
-    public ProjectService(ServerDbContext context, ProjectServiceClient projectServiceClient)
+    public ProjectService(ServerDbContext context, ProjectServiceApiClient projectServiceClient,
+        INameValidatorService nameValidatorService)
     {
         _context = context;
         _projectServiceClient = projectServiceClient;
+        _nameValidatorService = nameValidatorService;
     }
 
     public Project CreateProject(string name, string buildScript)
@@ -27,18 +28,20 @@ public class ProjectService : IProjectService
 
         if (!_nameValidatorService.IsValidProjectName(name))
             throw new ServiceException($"Name '{name}' does not fit the pattern");
-        
+
         var id = Guid.NewGuid();
         string repository;
         if (Environment.GetEnvironmentVariable("WITHOUT_PS") is null)
         {
-            repository = _projectServiceClient.CreateAsync(new ProjectCreateDto(id, name, false)).Result
+            repository = _projectServiceClient.CreateAsync(default,
+                    new ProjectCreateDto { Id = id, Private = false, RepositoryName = name }).Result
                 .ToString();
         }
         else
         {
             repository = name + ".git";
         }
+
         var project = new Project(id, name, repository, buildScript, new List<Build>(), new List<Instance>());
 
         _context.Projects.Add(project);

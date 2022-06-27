@@ -40,7 +40,7 @@ public class DbJokes
             var project = db.Projects.Include(p => p.Builds).First();
             var build = project.Builds.First();
             var dedicatedMachine = db.DedicatedMachines.First();
-            project.Instances.Add(new Instance(new InstanceConfig(build.Id, dedicatedMachine.Id, "echo 123")));
+            project.Instances.Add(new Instance("Name", new InstanceConfig(build.Id, dedicatedMachine.Id, "echo 123")));
 
             db.Update(project);
             db.SaveChanges();
