@@ -16,11 +16,11 @@ public class InstanceController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult RegisterInstance(Guid projectId, InstanceConfig config)
+    public ActionResult CreateInstance(Guid projectId, string name, InstanceConfig config)
     {
         try
         {
-            _service.CreateInstance(projectId, config);
+            _service.CreateInstance(projectId, name, config);
             return Ok();
         }
         catch (ArgumentOutOfRangeException e)
@@ -29,13 +29,19 @@ public class InstanceController : ControllerBase
         }
     }
 
+    [HttpGet]
+    public void DeleteInstance(Guid instanceId)
+    {
+        _service.DeleteInstance(instanceId);
+    }
+
     [HttpPost]
     public ActionResult ChangeInstanceState(Guid instanceId, InstanceState newState)
     {
         _service.ChangeInstanceState(instanceId, newState);
         return Ok();
     }
-    
+
     [HttpPost]
     public ActionResult UpdateConfiguration(Guid instanceId, InstanceConfig instanceConfig)
     {
@@ -49,7 +55,7 @@ public class InstanceController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpGet]
     public ActionResult<InstanceConfig> GetConfiguration(Guid instanceId)
     {
@@ -62,7 +68,7 @@ public class InstanceController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpGet]
     public ActionResult<IReadOnlyCollection<InstanceState>> ListAllStates(Guid instanceId)
     {
@@ -75,7 +81,13 @@ public class InstanceController : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
+    [HttpGet]
+    public void StartInstance(Guid instanceId)
+    {
+        _service.StartInstance(instanceId);
+    }
+
     [HttpGet]
     public ActionResult<IReadOnlyCollection<InstanceState>> ListLastStates(Guid instanceId, int count)
     {

@@ -4,7 +4,7 @@ using Domain.Entities.Instances;
 using Domain.Services;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using ProjectServiceApiClient;
+using ProjectServiceApi;
 using Server.Core.Services;
 
 namespace Server.Core.Test;
@@ -34,11 +34,13 @@ public class InstanceServiceTest
         _scripts = Enumerable.Range(0, Count)
             .Select(i => $"script{i}")
             .ToList();
-        
-        var projectService =  new ProjectService(context, new ProjectServiceClient("test", new HttpClient()));
+
+        var nameValidator = new NameValidatorService();
+        var projectService =
+            new ProjectService(context, new ProjectServiceApiClient("test", new HttpClient()), nameValidator);
         var tokenService = new TokenService(context);
         var dmService = new DedicatedMachineService(context, tokenService);
-        _service = new InstanceService(context, projectService, dmService);
+        _service = new InstanceService(context, projectService, dmService, nameValidator, null);
         _testProject = projectService.CreateProject(_names[0], _scripts[0]);
         _testBuild = projectService.AddBuild(_testProject.Id, _names[0], Guid.NewGuid());
         _testMachine =
@@ -48,17 +50,18 @@ public class InstanceServiceTest
     [Test]
     public void RegisterInstanceTest()
     {
-        _service.CreateInstance(_testProject.Id, new InstanceConfig(_testBuild.Id, _testMachine.Id, "start"));
-        
+        _service.CreateInstance(_testProject.Id, "Name",
+            new InstanceConfig(_testBuild.Id, _testMachine.Id, "start"));
+
         Assert.That(_service.ListAllStates(_testProject.Instances.First().Id).Count, Is.EqualTo(1));
     }
-    
+
     [Test]
     public void ChangeInstanceStateTest()
     {
-        var instance = _service.CreateInstance(_testProject.Id,
+        var instance = _service.CreateInstance(_testProject.Id, "Name",
             new InstanceConfig(_testBuild.Id, _testMachine.Id, "start"));
-        
+
         Assert.That(_service.ListAllStates(instance.Id).Last(), Is.EqualTo(InstanceState.NotPublished));
         _service.ChangeInstanceState(instance.Id, InstanceState.Running);
         Assert.That(_service.ListAllStates(instance.Id).Last(), Is.EqualTo(InstanceState.Running));

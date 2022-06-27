@@ -1,6 +1,5 @@
 ﻿@page "/projects/{projectName}/"
 @using Server.API.Client
-@using Server.API.Client.Contracts
 @using Server.BlazorUI.Pages.Projects.Dialogs
 @inject ProjectClient ProjectClient
 @inject NavigationManager NavigationManager
@@ -35,8 +34,8 @@
     </button>
     @if (_showInstanceList)
     {
-        <InstancesList Collection="@project.Instances"/>
-        <button class="btn btn-secondary" @onclick="@(_ => _instanceCreateDialog.Show())">New</button>
+        <InstancesList Collection="@project.Instances" Project="@project"/>
+        <button class="btn btn-secondary" @onclick="@(_ => _createInstanceDialog.Show())">New</button>
     }
 </div>
 
@@ -45,12 +44,12 @@
 
 <DeleteDialog @ref="_deleteDialog" OnDelete="@OnDelete"/>
 <CreateBuildDialog @ref="_createBuildDialog" Project="@project" OnHide="@StateHasChanged"/>
-<CreateInstanceDialog @ref="_instanceCreateDialog" Project="@project" OnHide="@StateHasChanged"/>
+<CreateInstanceDialog @ref="_createInstanceDialog" Project="@project" OnHide="@StateHasChanged"/>
 
 @code {
     DeleteDialog _deleteDialog = null!;
     CreateBuildDialog _createBuildDialog = null!;
-    CreateInstanceDialog _instanceCreateDialog = null!;
+    CreateInstanceDialog _createInstanceDialog = null!;
     bool _showBuildList = true;
     bool _showInstanceList = true;
 

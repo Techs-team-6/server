@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using DMConnect.Share;
 using Domain.Dto.DedicatedMachineDto;
 using Domain.Entities;
 using Domain.Services;
@@ -9,6 +10,8 @@ namespace DMConnect.Server;
 
 public class DedicatedMachineHub : IMachineAgentEventListener
 {
+    public static DedicatedMachineHub Instance { get; private set; }
+
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<DedicatedMachineHub> _logger;
     private readonly IDedicatedMachineService _machineMachineService;
@@ -29,6 +32,7 @@ public class DedicatedMachineHub : IMachineAgentEventListener
         _logger = _loggerFactory.CreateLogger<DedicatedMachineHub>();
         _thread = new Thread(ListenLoop);
         _cancellationTokenSource = new CancellationTokenSource();
+        Instance = this;
     }
 
     public void Start()
@@ -111,13 +115,22 @@ public class DedicatedMachineHub : IMachineAgentEventListener
         switch (action)
         {
             case InstanceStdOutDto stdOutDto:
+                Console.WriteLine(stdOutDto.Message);
+                break;
             case InstanceStdErrDto stdErrDto:
-                throw new NotImplementedException();
+                Console.WriteLine(stdErrDto.Message);
+                break;
+            // throw new NotImplementedException();
             case InstanceSetStateDto setStateDto:
                 _instanceService.ChangeInstanceState(setStateDto.InstanceId, setStateDto.InstanceState);
                 break;
             default:
                 throw new Exception("Unexpected action: " + action);
         }
+    }
+
+    public IDedicatedMachineAgent? GetMachineAgent(Guid id)
+    {
+        return _clients.FirstOrDefault(client => client.Id == id);
     }
 }

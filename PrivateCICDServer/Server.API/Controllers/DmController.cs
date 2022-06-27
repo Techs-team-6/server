@@ -22,7 +22,13 @@ public class DmController : ControllerBase
     {
         return _service.List();
     }
-    
+
+    [HttpGet]
+    public DedicatedMachine GetMachine(Guid id)
+    {
+        return _service.GetDedicatedMachine(id);
+    }
+
     [HttpPost]
     public ActionResult<DedicatedMachine> RegisterMachine(string token, string label, string description)
     {

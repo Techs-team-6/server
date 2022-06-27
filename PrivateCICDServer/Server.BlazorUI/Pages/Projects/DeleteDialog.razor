@@ -1,6 +1,4 @@
-﻿@using System.Globalization
-@using Server.API.Client.Contracts
-<Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
+﻿<Dialog Size="@DialogSize.Normal" Centered="true" IsShowing="_isShown" Animation="@DialogAnimation.SlideDown">
     <DialogHeader>
         <h4>Delete project?</h4>
     </DialogHeader>
@@ -14,7 +12,7 @@
 {
     private Project _project = null!;
     private bool _isShown;
-    
+
     [Parameter]
     public Action<Project> OnDelete { get; set; } = null!;
 
@@ -29,7 +27,7 @@
         _isShown = false;
         OnDelete.Invoke(_project);
     }
-    
+
     private void Cancel()
     {
         _isShown = false;

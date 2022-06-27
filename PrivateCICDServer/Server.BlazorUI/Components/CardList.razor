@@ -16,13 +16,11 @@ else
 
     [Parameter]
     public ICollection<TItem> Collection { get; set; } = null!;
-    
+
     [Parameter]
     public string EmptyCollectionMessage { get; set; } = null!;
 
     [Parameter]
-    public RenderFragment<TItem> RenderCardView { get; set; } = item =>
-    {
-        return @<p>Hello</p>;
-    };
+    public RenderFragment<TItem> RenderCardView { get; set; } = item => { return @<p>Hello</p>; };
+
 }

@@ -1,0 +1,29 @@
+﻿@inherits CollectionConsumer<InstanceStateChange>
+<div class="container">
+    @{
+        var isHistoryShown = false;
+    }
+    <button class="btn btn-light" @onclick="@(_ => { isHistoryShown = !isHistoryShown; Console.WriteLine(123);})">
+        Recent State Changes
+    </button>
+    @if (isHistoryShown)
+    {
+        <table class="table" style="width: 24rem;">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>New State</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var stateChange in Collection)
+            {
+                <tr>
+                    <td>@stateChange.ChangeDate</td>
+                    <td>@stateChange.NewState</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
