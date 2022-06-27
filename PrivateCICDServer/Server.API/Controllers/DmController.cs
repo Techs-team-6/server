@@ -26,14 +26,7 @@ public class DmController : ControllerBase
     [HttpPost]
     public ActionResult<DedicatedMachine> RegisterMachine(string token, string label, string description)
     {
-        try
-        {
-            var dto = new RegisterDto(token, label, description);
-            return _service.RegisterMachine(dto);
-        }
-        catch (ServiceException e)
-        {
-            return BadRequest(e.Message);
-        }
+        var dto = new RegisterDto(token, label, description);
+        return _service.RegisterMachine(dto);
     }
 }

@@ -25,40 +25,19 @@ public class TokenController : ControllerBase
     [HttpPost]
     public ActionResult<string> Generate(string description)
     {
-        try
-        {
-            return _tokenService.Generate(description);
-        }
-        catch (ArgumentNullException e)
-        {
-            return BadRequest(e.Message);
-        }
+        return _tokenService.Generate(description);
     }
     
     [HttpPost]
     public void Edit(Guid id, string description)
     {
-        try
-        {
-            _tokenService.Edit(id, description);
-        }
-        catch (ServiceException e)
-        {
-            NotFound(e.Message);
-        }
+        _tokenService.Edit(id, description);
     }
 
     [HttpPost]
     public ActionResult Refuse(Guid id)
     {
-        try
-        {
-            _tokenService.Refuse(id);
-            return Ok();
-        }
-        catch (ServiceException e)
-        {
-            return BadRequest(e.Message);
-        }
+        _tokenService.Refuse(id);
+        return Ok();
     }
 }

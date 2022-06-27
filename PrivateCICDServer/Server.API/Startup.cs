@@ -1,6 +1,7 @@
 ﻿using Domain.Services;
 using ProjectServiceApiClient;
 using Server.API.Services;
+using Server.API.Tools;
 using Server.Core;
 using Server.Core.Services;
 
@@ -59,6 +60,8 @@ public class Startup
 
         // app.UseHttpsRedirection();
 
+        app.UseMiddleware<ErrorHandler>();
+        
         app.UseRouting();
         app.UseAuthorization();
         app.UseEndpoints(endpoints => endpoints.MapControllers());
