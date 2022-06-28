@@ -16,7 +16,7 @@ public class InstanceController : ControllerBase
     }
 
     [HttpPost]
-    public Instance RegisterInstance(Guid projectId, string name, InstanceConfig config)
+    public Instance CreateInstance(Guid projectId, string name, InstanceConfig config)
     {
         return _service.CreateInstance(projectId, name, config);
     }
@@ -32,19 +32,19 @@ public class InstanceController : ControllerBase
     {
         _service.ChangeInstanceState(instanceId, newState);
     }
-    
+
     [HttpPost]
     public void UpdateConfiguration(Guid instanceId, InstanceConfig instanceConfig)
     {
         _service.UpdateConfig(instanceId, instanceConfig);
     }
-    
+
     [HttpGet]
     public InstanceConfig GetConfiguration(Guid instanceId)
     {
         return _service.GetConfiguration(instanceId);
     }
-    
+
     [HttpGet]
     public IReadOnlyCollection<InstanceState> ListAllStates(Guid instanceId)
     {
